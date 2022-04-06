@@ -31,7 +31,7 @@ const BookDetailsScreen = ({ name, phNo, route: { params: { isbn13 } } }) => {
 	console.warn(phNo);
 
 	const [bookDetails, setBookDetails] = useState({});
-	const [Loader, setLoader] = useState({});
+	const [Loader, setLoader] = useState(false);
 
 
 
@@ -61,10 +61,6 @@ const BookDetailsScreen = ({ name, phNo, route: { params: { isbn13 } } }) => {
 			<FocusAwareStatusBar isLightBar={false} isTopSpace={true} />
 			<Header title={"Detail Book"} />
 			<View style={{ flex: 1, backgroundColor: Colors.WHITE }} >
-
-
-
-
 
 				{Loader ? <ActivityIndicator color={Colors.PRIMARY} size='large' /> :
 					<View style={{ flex: 1, marginTop: 20, justifyContent: 'flex-end' }}>

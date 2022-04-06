@@ -14,11 +14,7 @@ import { Colors, Constants } from '../../global/index';
 
 // import Back from '../../assets/svg/Back';
 
-const Header = ({
-	title,
-	activateLeftIcon = true,
-	activateRightIcon,
-	backgroundColor }) => {
+const Header = ({ activateLeftIcon = true, activateRightIcon, rightIconPress, title }) => {
 
 	const navigation = useNavigation();
 
@@ -31,16 +27,16 @@ const Header = ({
 			<View style={styles.headerLeftContainer}>
 
 				<TouchableOpacity
-					
+
 					onPress={goBack}
 					style={styles.headerLeft}>
 
-					{/* {activateLeftIcon ?
-						<Back />
+					{activateLeftIcon ?
+						<BackSpaceSvg />
+
 						:
 						null
-					} */}
-					<BackSpaceSvg />
+					}
 
 				</TouchableOpacity>
 
@@ -61,10 +57,11 @@ const Header = ({
 			<View style={styles.headerRightContainer}>
 
 				<TouchableOpacity
+					onPress={rightIconPress}
 					style={styles.headerRight}>
 
-
-					<MenuSvg  />
+					{activateRightIcon ?
+						<MenuSvg /> : null}
 
 
 				</TouchableOpacity>

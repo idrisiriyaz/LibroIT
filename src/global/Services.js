@@ -10,4 +10,7 @@ export const getBookListApi = () => {
 export const getBookDetailsApi = (isbn13) => {
     return axios.get(`${BOOK_URL}/books/${isbn13}`);
 };
+export const getBookSearchListApi = (text) => {
+    return axios.get(`${BOOK_URL}/search/${text}`);
+};
 // export const SCREEN_WIDTH = Dimensions.get('window').width;

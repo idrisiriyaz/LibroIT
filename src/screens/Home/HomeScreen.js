@@ -70,19 +70,14 @@ const HomeScreen = ({ name, bookItems, dispatch, phNo }) => {
 		"url": "https://itbook.store/books/9781491954249"
 	}
 
+	const goToList = () => navigation.navigate(ScreenNames.BOOK_LIST)
+	const goToDetails = (isbn13) => navigation.navigate(ScreenNames.BOOK_DETAILS, { isbn13: isbn13 })
 
 
-	console.warn(bookItems);
-	const renderbookList = ({ item }) => {
-
-		const goToDetails = () => navigation.navigate(ScreenNames.BOOK_DETAILS, { isbn13: item.isbn13 })
-
-
-
-		// dispatch(BookAction.addToCart(item));
+	const renderBookList = ({ item }) => {
 
 		return (
-			<TouchableOpacity onPress={goToDetails} style={{ borderRadius: 16, width: 160, marginLeft: 20, height: 240, backgroundColor: Colors.WHITE, justifyContent: 'center', alignItems: 'center', borderWidth: 2, paddingVertical: 10 }}>
+			<TouchableOpacity onPress={() => goToDetails(item.isbn13)} style={{ borderRadius: 16, width: 160, marginLeft: 20, height: 240, backgroundColor: Colors.WHITE, justifyContent: 'center', alignItems: 'center', borderWidth: 2, paddingVertical: 10 }}>
 
 				<Image
 					style={{ height: 100, width: 100 }}
@@ -120,6 +115,7 @@ const HomeScreen = ({ name, bookItems, dispatch, phNo }) => {
 							Search
 						</Text> */}
 						<TextInput
+							onFocus={goToList}
 							placeholder='Search' style={{ flex: 1, fontFamily: Fonts.BOLD, fontSize: Fonts.SIZE_16 }} />
 					</View>
 				</View>
@@ -146,7 +142,7 @@ const HomeScreen = ({ name, bookItems, dispatch, phNo }) => {
 
 								<FlatList
 									horizontal
-									data={bookList} renderItem={renderbookList} />
+									data={bookList} renderItem={renderBookList} />
 							</View>
 
 							<View style={{ backgroundColor: Colors.WHITE, bottom: 0, width: Constants.SCREEN_WIDTH, height: Constants.SCREEN_HEIGHT / 3, position: 'absolute', borderWidth: 2, borderTopLeftRadius: 40, }}>
