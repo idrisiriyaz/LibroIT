@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "376751088028",
+    "project_id": "libroit-f30da",
+    "storage_bucket": "libroit-f30da.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:376751088028:android:7188e0386848ffd2796859",
+        "android_client_info": {
+          "package_name": "com.libroit.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "376751088028-h47domrspq9rft172qf3p2i1q19a0pm7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.libroit.app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "376751088028-2u4e7hnj7katbtke83hni1lq4b55r6ih.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANgI027mTvJyw9xaomt85leqSa3Pvk234"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "376751088028-2u4e7hnj7katbtke83hni1lq4b55r6ih.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
