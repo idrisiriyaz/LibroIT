@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from 'react-native-screens/native-stack'
 
 //screens imports
 import HomeScreen from '../../screens/Home/HomeScreen';
+import BookListScreen from '../../screens/BookList/BookListScreen';
 
 enableScreens();
 const stack = createNativeStackNavigator();
@@ -16,12 +17,12 @@ const BrandStack = () => {
 				{
 					headerShown: false
 				}}
-			initialRouteName={ScreenNames.EXPLORE_BRAND}
+			initialRouteName={ScreenNames.BOOK_LIST}
 		// initialRouteName='Test'
 		>
 			<stack.Screen
-				name={ScreenNames.HOME}
-				component={HomeScreen} />
+				name={ScreenNames.BOOK_LIST}
+				component={BookListScreen} />
 		</stack.Navigator>
 	);
 };

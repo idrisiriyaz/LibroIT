@@ -6,17 +6,17 @@ export const styles = StyleSheet.create({
 
 	mainScreen: {
 		flex: 1,
-		backgroundColor: Colors.WHITE
+		backgroundColor: Colors.WHITE,
+		// justifyContent: ""
 	},
 	textinput: {
-		borderWidth: 1,
-		borderColor: Colors.BLACK,
+
 		height: 60,
 		marginLeft: 20,
 		borderRadius: 5,
 		fontSize: 18,
 		paddingHorizontal: 15,
-		fontFamily: Fonts.LIGHT,
+		fontFamily: Fonts.BOLD,
 		color: Fonts.BLACK,
 		marginRight: 20,
 	},

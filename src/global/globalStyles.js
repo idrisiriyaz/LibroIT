@@ -13,9 +13,9 @@ export const globalStyles = StyleSheet.create({
 		marginBottom: 15
 	},
 	buttonText: {
-		fontFamily: Fonts.MEDIUM,
+		fontFamily: Fonts.BOLD,
 		fontSize: 18,
-		color: Colors.WHITE
+		color: Colors.BLACK
 	},
 	view: {
 		flexDirection: "row",

@@ -1,6 +1,6 @@
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import React, { useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, Alert, TextInput, TouchableOpacity, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, Alert, TextInput, ActivityIndicator, TouchableOpacity, View } from 'react-native';
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar';
 import { Colors, Fonts, ScreenNames } from '../../global';
 import OTPTextInput from 'react-native-otp-textinput';
@@ -12,7 +12,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 import database from '@react-native-firebase/database'
 import auth from '@react-native-firebase/auth';
 // import { ALERT } from '../../global/colors';
-;
+import firestore from '@react-native-firebase/firestore';
+
 const RegisterOTPScreen = ({ navigation, route: { params: { phoneNumber, userName } }, params, dispatch }, props) => {
 
 	//Variables
@@ -28,49 +29,26 @@ const RegisterOTPScreen = ({ navigation, route: { params: { phoneNumber, userNam
 	const [minutes, setMinutes] = React.useState(1);
 	const [timerValue, setTimerValue] = React.useState(30);
 	const [resend, setResend] = React.useState(false);
+	const [Loader, setLoader] = React.useState(false)
 
 	//useRef
 	const timerRef = React.useRef();
 
 
 	const register = async () => {
-		database().ref(`users`).once('value', users => {
-			if (!users.exists()) {
-				database().ref(`users/${phoneNumber}`).set({
-					userName: userName,
-					phoneNumber: phoneNumber,
-				})
-
+		setLoader(true)
+		await firestore()
+			.collection('users').doc(phoneNumber).set({
+				userName: userName,
+				phoneNumber: phoneNumber
+			}).then(() => {
 				dispatch(UserAction.setName(userName));
 				dispatch(UserAction.setPhone(phoneNumber));
 				dispatch(UserAction.setSignedIn(true));
+				AsyncStorage.setItem('phoneNumber', phoneNumber.toString());
 				navigation.replace(ScreenNames.BOTTOM_TABS)
-
-			} else {
-
-				// let user = Object.values(users.val())
-				let key = Object.keys(users.val())
-
-				const isPresent = key.includes(phoneNumber.toString());
-
-				console.warn(isPresent);
-				// console.warn(user.includes(9271173131"));
-
-				if (!isPresent) {
-					database().ref(`users/${phoneNumber}`).set({
-						userName: userName,
-						phoneNumber: phoneNumber,
-					})
-				}
-			}
-
-			dispatch(UserAction.setName(userName));
-			dispatch(UserAction.setPhone(phoneNumber));
-			dispatch(UserAction.setSignedIn(true));
-			navigation.replace(ScreenNames.BOTTOM_TABS)
-		});
-		await AsyncStorage.setItem('phoneNumber', phoneNumber.toString());
-
+			})
+		setLoader(false)
 	}
 
 
@@ -121,21 +99,7 @@ const RegisterOTPScreen = ({ navigation, route: { params: { phoneNumber, userNam
 		};
 	}
 
-	const verifyOtp = async () => {
-		if (code === "123456") {
-			dispatch(UserAction.setUserId(user.userId));
-			dispatch(UserAction.setAnniversaryDate(user.anniversaryDate));
-			dispatch(UserAction.setDob(user.dob));
-			dispatch(UserAction.setEmail(user.email));
-			dispatch(UserAction.setName(user.userName));
-			dispatch(UserAction.setPhone(user.phone));
-			dispatch(UserAction.setSignedIn(true));
-			navigation.replace(ScreenNames.BOTTOM_TABS)
-			await AsyncStorage.setItem('userId', user.userId.toString());
-		} else {
-			alert("aokndwo")
-		}
-	}
+
 
 	//UseEffect
 	React.useEffect(() => {
@@ -196,8 +160,8 @@ const RegisterOTPScreen = ({ navigation, route: { params: { phoneNumber, userNam
 									textInputStyle={[styles.subtitle, {
 										borderRadius: 5,
 										borderColor: Colors.BLACK,
-										borderWidth: 1,
-										borderBottomWidth: 1,
+										borderWidth: 2,
+										borderBottomWidth: 2,
 										height: 40,
 										width: 35,
 									}]} />
@@ -228,14 +192,17 @@ const RegisterOTPScreen = ({ navigation, route: { params: { phoneNumber, userNam
 						}
 					</View>
 				</View>
-			</ScrollView>
-			<View style={{ justifyContent: "flex-end" }}>
-				<TouchableOpacity style={{ ...globalStyles.button, marginHorizontal: 56, borderRadius: 50 }} onPress={confirmCode}>
-					<Text style={globalStyles.buttonText}>
-						Verify
-					</Text>
-				</TouchableOpacity>
-				{/* <View style={{ flexDirection: "row", justifyContent: "center", marginBottom: 20 }}>
+				<View style={{ justifyContent: "flex-end" }}>
+					<TouchableOpacity style={{ ...globalStyles.button, marginHorizontal: 56, marginVertical: 50, borderRadius: 50, borderWidth: 2 }} onPress={confirmCode}>
+
+						{
+							Loader ? <ActivityIndicator color={Colors.BLACK} /> : <Text style={globalStyles.buttonText}>
+								Verify
+							</Text>
+						}
+
+					</TouchableOpacity>
+					{/* <View style={{ flexDirection: "row", justifyContent: "center", marginBottom: 20 }}>
 					<Text style={{ color: "#16161680" }}>
 						Don’t have a account?
 					</Text>
@@ -245,7 +212,9 @@ const RegisterOTPScreen = ({ navigation, route: { params: { phoneNumber, userNam
 						</Text>
 					</TouchableOpacity>
 				</View> */}
-			</View>
+				</View>
+			</ScrollView>
+
 		</KeyboardAvoidingView >
 	)
 };

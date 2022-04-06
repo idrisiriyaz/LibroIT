@@ -12,6 +12,7 @@ import SplashScreen from '../screens/SplashScreen';
 import introductionScreen from '../screens/Introduction/IntroductionScreen';
 import BookListScreen from '../screens/BookList/BookListScreen';
 import BookDetailsScreen from '../screens/BookDetails/BookDetailsScreen';
+import BookSearchScreen from '../screens/BookSearch/BookSearchScreen';
 
 enableScreens();
 const stack = createNativeStackNavigator();
@@ -281,6 +282,7 @@ const MainStack = ({ myUserId, dispatch, navigation, country }) => {
 				<stack.Screen options={{ contentStyle: { borderLeftColor: Colors.ALERT } }} name={ScreenNames.BOTTOM_TABS} component={BottomTabs} />
 				<stack.Screen name="SplashScreen" component={SplashScreen} />
 				<stack.Screen name={ScreenNames.INTRODUCTION} component={introductionScreen} />
+				<stack.Screen name={ScreenNames.BOOK_SEARCH} component={BookSearchScreen} />
 				<stack.Screen name={ScreenNames.BOOK_LIST} component={BookListScreen} />
 				<stack.Screen name={ScreenNames.BOOK_DETAILS} component={BookDetailsScreen} />
 				{/* <stack.Screen name={ScreenNames.BRAND_MAIN_STACK} component={BrandMainStack} />

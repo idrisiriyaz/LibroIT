@@ -16,7 +16,7 @@ import * as Service from '../../global/Services';
 import { useNavigation } from '@react-navigation/native';
 
 
-const BookDetailsScreen = () => {
+const BookSearchScreen = ({ route }) => {
 
 	//Variables
 
@@ -36,11 +36,13 @@ const BookDetailsScreen = () => {
 	const [Loader, setLoader] = useState(false);
 	const [searchText, setSearchText] = useState('');
 	const [totalList, setTotalList] = useState(0);
+	const [bookList, setBookList] = useState([])
+	const [title, setTitle] = useState(typeof route?.params?.title != 'undefined' ? route?.params?.title : "Book List")
 
 
 	const goToDetails = (isbn13) => navigation.navigate(ScreenNames.BOOK_DETAILS, { isbn13: isbn13 })
 
-	const getBookList = async (text) => {
+	const getBookSearchList = async (text) => {
 
 
 		setSearchText(text)
@@ -64,14 +66,48 @@ const BookDetailsScreen = () => {
 			setLoader(false)
 		}
 	}
+	const getBookList = async () => {
+		setLoader(true)
+		try {
+			const response = await Service.getBookListApi();
+			setBookList(response.data.books)
+			// console.warn(response.data);
+		} catch (error) {
+			console.warn(error);
+		}
+		setLoader(false)
 
+	}
 	useEffect(() => {
-		// getBookDetails();
+		getBookList();
 
 	}, [])
 
 
 
+	const renderBookSearchList = ({ item }) => {
+
+		return (
+			<TouchableOpacity onPress={() => goToDetails(item.isbn13)} style={{ borderRadius: 16, flexDirection: 'row', marginHorizontal: 20, marginVertical: 10, height: 180, backgroundColor: Colors.WHITE, justifyContent: 'center', alignItems: 'center', borderWidth: 2, paddingVertical: 10 }}>
+
+				<Image
+					style={{ height: 100, width: 100 }}
+
+					source={{ uri: item.image }} />
+
+				<View style={{ margin: 20, marginBottom: 0 }}  >
+					<Text numberOfLines={2} style={{ fontFamily: Fonts.BOLD, maxWidth: Constants.SCREEN_WIDTH / 2, color: Colors.GRAY_DARK, fontSize: Fonts.SIZE_10, marginBottom: 10, }}>
+						{item.subtitle}
+					</Text>
+
+					<Text numberOfLines={1} style={{ fontFamily: Fonts.BOLD, maxWidth: Constants.SCREEN_WIDTH / 2, color: Colors.BLACK, fontSize: Fonts.SIZE_12 }}>
+						{item.title}
+
+					</Text>
+				</View>
+			</TouchableOpacity>
+		)
+	}
 	const renderBookList = ({ item }) => {
 
 		return (
@@ -101,7 +137,7 @@ const BookDetailsScreen = () => {
 	return (
 		<View style={{ flex: 1, backgroundColor: Colors.WHITE }} >
 			<FocusAwareStatusBar isLightBar={false} isTopSpace={true} />
-			<Header title={"Search Book"} />
+			<Header activateLeftIcon={typeof route?.params?.title != 'undefined' ? true : false} title={title} />
 			<View style={{ flex: 1, backgroundColor: Colors.WHITE }} >
 
 
@@ -113,27 +149,31 @@ const BookDetailsScreen = () => {
 					<View style={{ height: 60, flexDirection: 'row', paddingHorizontal: 20, alignItems: 'center', borderWidth: 2, borderRadius: 40, backgroundColor: Colors.WHITE, position: 'absolute', width: Constants.SCREEN_WIDTH * 0.90 }} >
 						<SearchSvg />
 						<TextInput
-							autoFocus
-							onChangeText={text => getBookList(text)}
+							// autoFocus
+							onChangeText={text => getBookSearchList(text)}
 							// onFocus={goToList}
 							placeholder='Search' style={{ flex: 1, fontFamily: Fonts.BOLD, fontSize: Fonts.SIZE_16 }} />
 					</View>
 				</View>
-				{
-					searchText.length > 0 &&
+				{Loader ? <ActivityIndicator color={Colors.PRIMARY} size='large' /> :
+					searchText.length > 0 ?
 
 						Loader ? <ActivityIndicator color={Colors.PRIMARY} size='large' /> :
-						<>
-							<View style={{ flexDirection: 'row', marginHorizontal: 20, marginBottom: 10, justifyContent: 'space-between' }}>
-								<Text style={{ fontFamily: Fonts.BOLD, color: Colors.BLACK, fontSize: Fonts.SIZE_16, }}>Total</Text>
-								<Text style={{ fontFamily: Fonts.BOLD, color: Colors.BLACK, fontSize: Fonts.SIZE_16, }}>{totalList}</Text>
-							</View>
-							<FlatList
-								showsVerticalScrollIndicator
-								data={bookSearchList}
-								keyExtractor={(item, index) => `${JSON.stringify(item)}`}
-								renderItem={renderBookList} />
-						</>
+							<>
+								<View style={{ flexDirection: 'row', marginHorizontal: 20, marginBottom: 10, justifyContent: 'space-between' }}>
+									<Text style={{ fontFamily: Fonts.BOLD, color: Colors.BLACK, fontSize: Fonts.SIZE_16, }}>Total</Text>
+									<Text style={{ fontFamily: Fonts.BOLD, color: Colors.BLACK, fontSize: Fonts.SIZE_16, }}>{totalList}</Text>
+								</View>
+								<FlatList
+									showsVerticalScrollIndicator
+									data={bookSearchList}
+									keyExtractor={(item, index) => `${JSON.stringify(item)}`}
+									renderItem={renderBookSearchList} />
+							</> : <FlatList
+							showsVerticalScrollIndicator
+							data={bookList}
+							keyExtractor={(item, index) => `${JSON.stringify(item)}`}
+							renderItem={renderBookList} />
 
 				}
 
@@ -152,4 +192,4 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({ dispatch });
 
-export default connect(mapStateToProps, mapDispatchToProps)(BookDetailsScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(BookSearchScreen);

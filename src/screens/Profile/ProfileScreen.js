@@ -15,19 +15,8 @@ import * as UserAction from '../../redux/actions/userActions'
 
 const UserDetailScreen = ({
 	navigation,
-	referralCode,
-	userId,
-	name,
 	dispatch,
-	followers,
-	followings,
-	postsCount,
-	signInProvider,
-	email,
-	uid,
-	isSignedIn,
-	updatedprofile,
-	adminUid
+	
 }) => {
 
 

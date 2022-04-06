@@ -35,6 +35,7 @@ const HomeScreen = ({ name, bookItems, dispatch, phNo }) => {
 	console.warn(phNo);
 
 	const [bookList, setBookList] = useState([])
+	const [bookLast, setBookLast] = useState([])
 	const [Loader, setLoader] = useState({});
 
 
@@ -44,6 +45,7 @@ const HomeScreen = ({ name, bookItems, dispatch, phNo }) => {
 		try {
 			const response = await Service.getBookListApi();
 			setBookList(response.data.books)
+			setBookLast(response.data.books)
 			// console.warn(response.data);
 		} catch (error) {
 			console.warn(error);
@@ -60,17 +62,10 @@ const HomeScreen = ({ name, bookItems, dispatch, phNo }) => {
 	}, [])
 
 
-	const bookListDemo =
-	{
-		"title": "Designing Across Senses",
-		"subtitle": "A Multimodal Approach to Product Design",
-		"isbn13": "9781491954249",
-		"price": "$27.59",
-		"image": "https://itbook.store/img/books/9781491954249.png",
-		"url": "https://itbook.store/books/9781491954249"
-	}
 
-	const goToList = () => navigation.navigate(ScreenNames.BOOK_LIST)
+
+	const goToSearchList = () => navigation.navigate(ScreenNames.BOOK_SEARCH)
+	const goToList = (title) => navigation.navigate(ScreenNames.BOOK_LIST, { title: title })
 	const goToDetails = (isbn13) => navigation.navigate(ScreenNames.BOOK_DETAILS, { isbn13: isbn13 })
 
 
@@ -97,6 +92,20 @@ const HomeScreen = ({ name, bookItems, dispatch, phNo }) => {
 			</TouchableOpacity>
 		)
 	}
+	const renderBookLast = ({ item }) => {
+
+		return (
+			<TouchableOpacity onPress={() => goToDetails(item.isbn13)} style={{ height: 80, borderRadius: 80, borderWidth: 2, padding: 20, borderStyle: 'dotted', marginHorizontal: 20, alignItems: 'center', flexDirection: 'row' }} >
+
+				<Image source={{ uri: item ? item.image : null }} style={{ height: 40, width: 40, borderWidth: 2, borderRadius: 40, backgroundColor: Colors.ALERT, }} />
+				<View>
+
+					<Text numberOfLines={1} style={{ fontFamily: Fonts.BOLD, width: Constants.SCREEN_WIDTH * 0.6, marginLeft: 10, fontSize: Fonts.SIZE_14, color: Colors.BLACK }} >{item ? item.title : "Roya"}</Text>
+					<Text numberOfLines={1} style={{ fontFamily: Fonts.BOLD, width: Constants.SCREEN_WIDTH * 0.6, marginLeft: 10, fontSize: Fonts.SIZE_12, color: Colors.GRAY_DARK }} >{item ? item.subtitle : "Roya"}</Text>
+				</View>
+			</TouchableOpacity>
+		)
+	}
 	return (
 		<View style={{ flex: 1, backgroundColor: Colors.WHITE }} >
 			<FocusAwareStatusBar isLightBar={false} isTopSpace={true} />
@@ -115,7 +124,7 @@ const HomeScreen = ({ name, bookItems, dispatch, phNo }) => {
 							Search
 						</Text> */}
 						<TextInput
-							onFocus={goToList}
+							onFocus={goToSearchList}
 							placeholder='Search' style={{ flex: 1, fontFamily: Fonts.BOLD, fontSize: Fonts.SIZE_16 }} />
 					</View>
 				</View>
@@ -130,46 +139,40 @@ const HomeScreen = ({ name, bookItems, dispatch, phNo }) => {
 							<View style={{ backgroundColor: Colors.SECONDARY, flex: 1, borderWidth: 2, borderTopLeftRadius: 40, }}>
 
 								<View style={{ flexDirection: 'row', margin: 20, justifyContent: "space-between" }}>
-									<Text style={{ fontFamily: Fonts.BOLD, marginLeft: 10, fontSize: Fonts.SIZE_18, color: Colors.WHITE }} >Trending book</Text>
-									<View>
+									<Text style={{ fontFamily: Fonts.BOLD, marginLeft: 10, fontSize: Fonts.SIZE_18, color: Colors.WHITE }} >Trending Books</Text>
+									<TouchableOpacity onPress={() => goToList("Trending Books")} >
 										<View style={{ height: 40, width: 40, borderWidth: 2, borderRadius: 10, backgroundColor: Colors.WHITE, left: 4, top: 4 }}></View>
 										<View style={{ height: 40, width: 40, borderWidth: 2, borderRadius: 10, backgroundColor: Colors.WHITE, position: 'absolute', justifyContent: 'center', alignItems: 'center' }}>
 											<BackSvg />
 										</View>
-									</View>
+									</TouchableOpacity>
 								</View>
 
 
 								<FlatList
 									horizontal
+									keyExtractor={(item, index) => `${JSON.stringify(item)}`}
 									data={bookList} renderItem={renderBookList} />
 							</View>
 
 							<View style={{ backgroundColor: Colors.WHITE, bottom: 0, width: Constants.SCREEN_WIDTH, height: Constants.SCREEN_HEIGHT / 3, position: 'absolute', borderWidth: 2, borderTopLeftRadius: 40, }}>
 
 								<View style={{ flexDirection: 'row', margin: 20, justifyContent: "space-between" }}>
-									<Text style={{ fontFamily: Fonts.BOLD, marginLeft: 10, fontSize: Fonts.SIZE_18 }} >Last Book</Text>
-									<View>
+									<Text style={{ fontFamily: Fonts.BOLD, marginLeft: 10, fontSize: Fonts.SIZE_18 }} >Latest Books</Text>
+									<TouchableOpacity onPress={() => goToList("Latest Books")} >
 										<View style={{ height: 40, width: 40, borderWidth: 2, borderRadius: 10, backgroundColor: Colors.WHITE, left: 4, top: 4 }}></View>
 										<View style={{ height: 40, width: 40, borderWidth: 2, borderRadius: 10, backgroundColor: Colors.WHITE, position: 'absolute', justifyContent: 'center', alignItems: 'center' }}>
 											<BackSvg />
 										</View>
-									</View>
+									</TouchableOpacity>
 								</View>
 
+								<FlatList
+									horizontal
+									// inverted
+									keyExtractor={(item, index) => `${JSON.stringify(item)}`}
+									data={bookLast.reverse()} renderItem={renderBookLast} />
 
-								<View style={{ height: 80, borderRadius: 80, borderWidth: 2, padding: 20, borderStyle: 'dotted', marginHorizontal: 20, alignItems: 'center', flexDirection: 'row' }} >
-
-
-
-
-									<Image source={{ uri: bookListDemo ? bookListDemo.image : null }} style={{ height: 40, width: 40, borderWidth: 2, borderRadius: 40, backgroundColor: Colors.ALERT, }} />
-									<View>
-
-										<Text numberOfLines={1} style={{ fontFamily: Fonts.BOLD, width: Constants.SCREEN_WIDTH * 0.6, marginLeft: 10, fontSize: Fonts.SIZE_14, color: Colors.BLACK }} >{bookListDemo ? bookListDemo.title : "Roya"}</Text>
-										<Text numberOfLines={1} style={{ fontFamily: Fonts.BOLD, width: Constants.SCREEN_WIDTH * 0.6, marginLeft: 10, fontSize: Fonts.SIZE_12, color: Colors.GRAY_DARK }} >{bookListDemo ? bookListDemo.subtitle : "Roya"}</Text>
-									</View>
-								</View>
 							</View>
 
 

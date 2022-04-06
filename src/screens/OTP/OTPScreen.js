@@ -1,6 +1,6 @@
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import React, { useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, Alert, TouchableOpacity, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, Alert, TouchableOpacity, ActivityIndicator, View } from 'react-native';
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar';
 import { Colors, Fonts, ScreenNames } from '../../global';
 import OTPTextInput from 'react-native-otp-textinput';
@@ -11,6 +11,7 @@ import * as UserAction from '../../redux/actions/userActions'
 import AsyncStorage from '@react-native-community/async-storage';
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database'
+import firestore from '@react-native-firebase/firestore';
 
 const OTPScreen = ({ navigation, route: { params: { number } }, params, dispatch }, props) => {
 
@@ -30,6 +31,7 @@ const OTPScreen = ({ navigation, route: { params: { number } }, params, dispatch
 	const [minutes, setMinutes] = React.useState(1);
 	const [timerValue, setTimerValue] = React.useState(30);
 	const [resend, setResend] = React.useState(false);
+	const [Loader, setLoader] = React.useState(false)
 
 	//useRef
 	const timerRef = React.useRef();
@@ -44,6 +46,8 @@ const OTPScreen = ({ navigation, route: { params: { number } }, params, dispatch
 	}
 
 	async function confirmCode() {
+
+
 		try {
 			await confirm.confirm(code);
 			verifyOtp();
@@ -74,21 +78,27 @@ const OTPScreen = ({ navigation, route: { params: { number } }, params, dispatch
 
 	const verifyOtp = async () => {
 
+		setLoader(true)
 
-		database().ref(`users/${number}`).once('value', user => {
-			if (!user.exists()) {
+		await firestore()
+			.collection('users')
+			.doc(`${number}`)
+			.get()
+			.then(documentSnapshot => {
+				console.log('User exists: ', documentSnapshot.exists);
 
-			} else {
-				
-				dispatch(UserAction.setName(user.val().userName));
-				dispatch(UserAction.setPhone(user.val().phoneNumber));
-				dispatch(UserAction.setSignedIn(true));
-				navigation.replace(ScreenNames.BOTTOM_TABS)
-			}
-		});
-		await AsyncStorage.setItem('phoneNumber', number.toString());
+				if (documentSnapshot.exists) {
+					console.log('User data: ', documentSnapshot.data());
 
-
+					const user = documentSnapshot.data()
+					dispatch(UserAction.setName(user.userName));
+					dispatch(UserAction.setPhone(user.phoneNumber));
+					dispatch(UserAction.setSignedIn(true));
+					AsyncStorage.setItem('phoneNumber', number.toString());
+					navigation.replace(ScreenNames.BOTTOM_TABS)
+				}
+			});
+		setLoader(false)
 	}
 
 	//UseEffect
@@ -152,8 +162,8 @@ const OTPScreen = ({ navigation, route: { params: { number } }, params, dispatch
 									textInputStyle={[styles.subtitle, {
 										borderRadius: 5,
 										borderColor: Colors.BLACK,
-										borderWidth: 1,
-										borderBottomWidth: 1,
+										borderWidth: 2,
+										borderBottomWidth: 2,
 										height: 40,
 										width: 35,
 									}]} />
@@ -184,14 +194,17 @@ const OTPScreen = ({ navigation, route: { params: { number } }, params, dispatch
 						}
 					</View>
 				</View>
-			</ScrollView>
-			<View style={{ justifyContent: "flex-end" }}>
-				<TouchableOpacity style={{ ...globalStyles.button, marginHorizontal: 56, borderRadius: 50 }} onPress={confirmCode}>
-					<Text style={globalStyles.buttonText}>
-						Verify
-					</Text>
-				</TouchableOpacity>
-				{/* <View style={{ flexDirection: "row", justifyContent: "center", marginBottom: 20 }}>
+
+				<View style={{ justifyContent: "flex-end" }}>
+					<TouchableOpacity style={{ ...globalStyles.button, marginHorizontal: 56, marginVertical: 50, borderRadius: 50, borderWidth: 2 }} onPress={confirmCode}>
+
+						{Loader ? <ActivityIndicator color={Colors.BLACK} /> : <Text style={globalStyles.buttonText}>
+							Verify
+						</Text>
+						}
+
+					</TouchableOpacity>
+					{/* <View style={{ flexDirection: "row", justifyContent: "center", marginBottom: 20 }}>
 					<Text style={{ color: "#16161680" }}>
 						Don’t have a account?
 					</Text>
@@ -201,7 +214,8 @@ const OTPScreen = ({ navigation, route: { params: { number } }, params, dispatch
 						</Text>
 					</TouchableOpacity>
 				</View> */}
-			</View>
+				</View>
+			</ScrollView>
 		</KeyboardAvoidingView >
 	)
 };

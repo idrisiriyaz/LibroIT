@@ -29,7 +29,8 @@ const Header = ({ activateLeftIcon = true, activateRightIcon, rightIconPress, ti
 				<TouchableOpacity
 
 					onPress={goBack}
-					style={styles.headerLeft}>
+					style={activateLeftIcon ? styles.headerLeft :
+						null}>
 
 					{activateLeftIcon ?
 						<BackSpaceSvg />

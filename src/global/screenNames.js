@@ -10,4 +10,5 @@ export const REGISTER = 'REGISTER';
 export const REGISTER_OTP = 'REGISTER_OTP';
 export const BOOK_DETAILS = 'BOOK_DETAILS';
 export const BOOK_LIST = 'BOOK_LIST';
+export const BOOK_SEARCH = 'BOOK_SEARCH';
 
