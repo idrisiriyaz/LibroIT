@@ -138,10 +138,8 @@ const ChatScreen = ({ uid, adminUid }) => {
 	return (
 		<KeyboardAvoidingView
 			behavior={Platform.OS === 'ios' ? "padding" : null} style={{ backgroundColor: Colors.WHITE, flex: 1 }}>
-			<FocusAwareStatusBar
-				barStyle="dark-content"
-				backgroundColor={Colors.PRIMARY}
-			/>
+			<FocusAwareStatusBar isLightBar={false} isTopSpace={true} />
+
 			<Header name='YouAdMe Chat' activateLeftIcon={true} />
 			<View style={{ flex: 1, justifyContent: "center", backgroundColor: Colors.WHITE, paddingTop: 20 }}>
 				{

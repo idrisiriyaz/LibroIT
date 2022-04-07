@@ -15,14 +15,17 @@ import { Colors, Constants } from '../../global/index';
 // import Back from '../../assets/svg/Back';
 
 const Header = ({
-    title,
     activateLeftIcon = true,
     activateRightIcon,
-    backgroundColor }) => {
+    title,
+    rightIconPress,
+    midIconPress
+
+}) => {
 
     const navigation = useNavigation();
 
-    const goBack = () => navigation.goBack();
+
 
     return (
         // backgroundColor: true= white ,false=primary 
@@ -32,7 +35,7 @@ const Header = ({
 
                 <TouchableOpacity
 
-                    // onPress={goBack}
+                    onPress={rightIconPress}
                     style={[styles.headerLeft, { backgroundColor: Colors.TERTIARY }]}>
 
                     <View>
@@ -67,17 +70,24 @@ const Header = ({
             {/* header right */}
             <View style={[styles.headerRightContainer, { flexDirection: "row", flex: 0.5 }]}>
 
-                <TouchableOpacity
-                    style={styles.headerRight}>
-                    <BagSvg />
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.headerLeft, { backgroundColor: Colors.WHITE,  }]}>
-                    <Text style={[styles.headerText, { textAlign: 'center' }]}>
-                        T
-                    </Text>
+                {activateRightIcon ?
+                    <>
+                        <TouchableOpacity
+                         onPress={midIconPress}
+                            style={styles.headerRight}>
+                            <BagSvg />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.headerLeft, { backgroundColor: Colors.WHITE, }]}>
+                            <Text style={[styles.headerText, { textAlign: 'center' }]}>
+                                {title}
+                            </Text>
 
-                </TouchableOpacity>
+                        </TouchableOpacity>
+                    </> : <Text style={[styles.headerText, { fontSize: 20 }]}>
+                        LibroIT
+                    </Text>
+                }
 
 
             </View>

@@ -10,6 +10,7 @@ import Svg, { Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-community/async-storage';
 import * as UserAction from '../redux/actions/userActions'
 import database from '@react-native-firebase/database'
+import firestore from '@react-native-firebase/firestore';
 
 const SplashScreen = ({
 	navigation,
@@ -128,7 +129,7 @@ const SplashScreen = ({
 
 
 	const CheckAsync = async () => {
-	
+
 
 	}
 	React.useEffect(() => {
@@ -147,23 +148,33 @@ const SplashScreen = ({
 		}).start(async ({ finished }) => {
 			if (finished) {
 				const phoneNumber = await AsyncStorage.getItem('phoneNumber');
-				
+
 
 				if (phoneNumber == null) {
 					navigation.dispatch(resetStackAndGoToHome)
 				} else {
 
+					await firestore()
+						.collection('users')
+						.doc(`${phoneNumber}`)
+						.get()
+						.then(documentSnapshot => {
 
-					database().ref(`users/${phoneNumber}`).once('value', user => {
-						if (!user.exists()) {
-			
-						} else {
-							dispatch(UserAction.setName(user.val().userName));
-							dispatch(UserAction.setPhone(user.val().phoneNumber));
-							dispatch(UserAction.setSignedIn(true));
 							navigation.dispatch(resetStackAndGoToHome)
-						}
-					});
+
+
+							if (documentSnapshot.exists) {
+								console.log('User data: ', documentSnapshot.data());
+
+								const user = documentSnapshot.data()
+								dispatch(UserAction.setName(user.userName));
+								dispatch(UserAction.setPhone(user.phoneNumber));
+								dispatch(UserAction.setSignedIn(true));
+								navigation.dispatch(resetStackAndGoToHome)
+							}
+						});
+
+
 
 					// console.warn(response);
 					// dispatch(UserAction.setUserId(user.userId));
@@ -173,10 +184,10 @@ const SplashScreen = ({
 					// dispatch(UserAction.setName(user.userName));
 					// dispatch(UserAction.setPhone(user.phone));
 					// dispatch(UserAction.setSignedIn(true));
-					
+
 				}
 
-			
+
 
 				// navigation.dispatch(ScreenNames.INTRODUCTION)
 			}

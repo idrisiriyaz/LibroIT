@@ -165,7 +165,7 @@ const LoginScreen = ({ navigation }) => {
 								color: "#161616", fontFamily: Fonts.BOLD,
 								color: Fonts.BLACK,
 							}}>
-								Sign up
+								Register
 							</Text>
 
 						</TouchableOpacity>

@@ -63,6 +63,8 @@ const RegisterOTPScreen = ({ navigation, route: { params: { phoneNumber, userNam
 	}
 
 	async function confirmCode() {
+		setLoader(false)
+
 		try {
 			await confirm.confirm(code);
 			register();
@@ -71,6 +73,8 @@ const RegisterOTPScreen = ({ navigation, route: { params: { phoneNumber, userNam
 			Alert.alert('Alert!', 'Invalid code.')
 			// console.log('Invalid code.');
 		}
+		setLoader(false)
+
 	}
 
 	// if (!confirm) {

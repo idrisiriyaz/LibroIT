@@ -31,7 +31,7 @@ const OTPScreen = ({ navigation, route: { params: { number } }, params, dispatch
 	const [minutes, setMinutes] = React.useState(1);
 	const [timerValue, setTimerValue] = React.useState(30);
 	const [resend, setResend] = React.useState(false);
-	const [Loader, setLoader] = React.useState(false)
+	const [Loader, setLoader] = React.useState(false);
 
 	//useRef
 	const timerRef = React.useRef();
@@ -46,6 +46,7 @@ const OTPScreen = ({ navigation, route: { params: { number } }, params, dispatch
 	}
 
 	async function confirmCode() {
+		setLoader(true)
 
 
 		try {
@@ -56,6 +57,8 @@ const OTPScreen = ({ navigation, route: { params: { number } }, params, dispatch
 			Alert.alert('Alert!', 'Invalid code.')
 			// console.log('Invalid code.');
 		}
+		setLoader(false)
+
 	}
 	//Functions
 	const startTimer = () => {

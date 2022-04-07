@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
     editButton: { marginTop: 15, borderColor: Colors.PRIMARY, borderWidth: 1.5, alignItems: "center", borderRadius: 5 },
     container: {
         flex: 1,
-        backgroundColor: Colors.WHITE
+        backgroundColor: Colors.WHITE,
     },
     editBtnText: {
         fontFamily: Fonts.MEDIUM,

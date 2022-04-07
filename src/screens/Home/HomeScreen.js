@@ -15,8 +15,9 @@ import * as BookAction from '../../redux/actions/bookAction'
 
 import * as Service from '../../global/Services';
 import { useNavigation } from '@react-navigation/native';
+import ProfileModal from '../../components/ProfileModal/ProfileModal';
 
-const HomeScreen = ({ name, bookItems, dispatch, phNo }) => {
+const HomeScreen = ({ name, bookItems, dispatch, isSignedIn, phNo }) => {
 
 	//Variables
 
@@ -37,8 +38,10 @@ const HomeScreen = ({ name, bookItems, dispatch, phNo }) => {
 	const [bookList, setBookList] = useState([])
 	const [bookLast, setBookLast] = useState([])
 	const [Loader, setLoader] = useState({});
+	const [visibleModal, setVisibleModal] = useState(false);
 
 
+	const toggleVisibleModal = () => setVisibleModal(!visibleModal);
 
 	const getBookList = async () => {
 		setLoader(true)
@@ -67,6 +70,7 @@ const HomeScreen = ({ name, bookItems, dispatch, phNo }) => {
 	const goToSearchList = () => navigation.navigate(ScreenNames.BOOK_SEARCH)
 	const goToList = (title) => navigation.navigate(ScreenNames.BOOK_LIST, { title: title })
 	const goToDetails = (isbn13) => navigation.navigate(ScreenNames.BOOK_DETAILS, { isbn13: isbn13 })
+	const goToChat = () => navigation.navigate(ScreenNames.INBOX)
 
 
 	const renderBookList = ({ item }) => {
@@ -109,7 +113,20 @@ const HomeScreen = ({ name, bookItems, dispatch, phNo }) => {
 	return (
 		<View style={{ flex: 1, backgroundColor: Colors.WHITE }} >
 			<FocusAwareStatusBar isLightBar={false} isTopSpace={true} />
-			<HomeHeader title="Riyaz" />
+			<HomeHeader
+				activateRightIcon={isSignedIn ? true : false}
+				title={isSignedIn ? name.charAt(0) : null}
+				midIconPress={goToChat}
+				rightIconPress={
+					() => {
+						if (isSignedIn) {
+
+							toggleVisibleModal()
+						} else {
+
+						}
+					}
+				} />
 			<View style={{ flex: 1, backgroundColor: Colors.WHITE }} >
 
 
@@ -206,12 +223,13 @@ const HomeScreen = ({ name, bookItems, dispatch, phNo }) => {
 
 
 			</View>
-
+			{/* <ProfileModal visible={visibleModal} toggleModal={toggleVisibleModal} /> */}
 		</View>
 	)
 };
 const mapStateToProps = state => ({
 	phNo: state.user.phNo,
+	isSignedIn: state.user.isSignedIn,
 	name: state.user.name,
 	bookItems: state.bookmark.bookItems,
 });

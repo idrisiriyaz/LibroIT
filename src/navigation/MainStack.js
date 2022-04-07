@@ -13,6 +13,8 @@ import introductionScreen from '../screens/Introduction/IntroductionScreen';
 import BookListScreen from '../screens/BookList/BookListScreen';
 import BookDetailsScreen from '../screens/BookDetails/BookDetailsScreen';
 import BookSearchScreen from '../screens/BookSearch/BookSearchScreen';
+import ChatScreenCode from '../screens/ChatScreen/ChatScreenCode';
+import InboxScreen from '../screens/Inbox/InboxScreen';
 
 enableScreens();
 const stack = createNativeStackNavigator();
@@ -279,12 +281,14 @@ const MainStack = ({ myUserId, dispatch, navigation, country }) => {
 
 		>
 			<stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={'SplashScreen'}>
-				<stack.Screen options={{ contentStyle: { borderLeftColor: Colors.ALERT } }} name={ScreenNames.BOTTOM_TABS} component={BottomTabs} />
+				<stack.Screen name={ScreenNames.BOTTOM_TABS} component={BottomTabs} />
 				<stack.Screen name="SplashScreen" component={SplashScreen} />
 				<stack.Screen name={ScreenNames.INTRODUCTION} component={introductionScreen} />
 				<stack.Screen name={ScreenNames.BOOK_SEARCH} component={BookSearchScreen} />
 				<stack.Screen name={ScreenNames.BOOK_LIST} component={BookListScreen} />
 				<stack.Screen name={ScreenNames.BOOK_DETAILS} component={BookDetailsScreen} />
+				<stack.Screen name={ScreenNames.CHAT} component={ChatScreenCode} />
+				<stack.Screen name={ScreenNames.INBOX} component={InboxScreen} />
 				{/* <stack.Screen name={ScreenNames.BRAND_MAIN_STACK} component={BrandMainStack} />
 			<stack.Screen name={ScreenNames.YOUADME} component={BrandYouadmiScreen} />
 			<stack.Screen name="StartScreen" component={StartScreen} />

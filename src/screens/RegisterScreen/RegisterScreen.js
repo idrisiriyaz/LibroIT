@@ -16,74 +16,130 @@ const RegisterScreen = ({ navigation }) => {
 	//States
 	const [phoneNumber, setNumber] = React.useState('');
 	const [userName, setUserName] = React.useState('');
+	const [verifyUserName, setVerifyUserName] = React.useState(false);
 	const [Loader, setLoader] = React.useState(false)
+	const [checkUser, setCheckUser] = React.useState(false);
 
 	//Refs
 
 	//Functions
+
+	// async function checkUserName(userName) {
+
+
+
+	// 	await firestore()
+	// 		.collection('users')
+	// 		.get().then(documentSnapshot => {
+	// 			documentSnapshot.forEach(snapshot => {
+
+
+	// 				const user = snapshot.data()
+	// 				// console.warn(typeof user.userName);
+	// 				// console.warn(typuserName);
+	// 				// console.warn(user.userName === userName);
+
+	// 				if (user.userName === userName) {
+
+
+
+	// 					Alert.alert("Alert!", 'Already UserName')
+	// 				} else {
+
+	// 				}
+
+
+	// 			})
+	// 		}
+	// 		)
+
+	// }
+
+
 	const Register = async () => {
 		setLoader(true)
-		if (phoneNumber.length > 9) {
 
-			if (userName) {
-				await firestore()
-					.collection('users')
-					.doc(`${phoneNumber}`)
-					.get()
-					.then(documentSnapshot => {
-						console.log('User exists: ', documentSnapshot.exists);
-
-						if (documentSnapshot.exists) {
-							console.log('User data: ', documentSnapshot.data());
-							Alert.alert("Alert!", 'Already')
-						} else {
-							navigation.navigate(ScreenNames.REGISTER_OTP, { phoneNumber: phoneNumber, userName: userName })
-						}
-					});
-
-
-
-
-				// database().ref(`users`).once('value', users => {
-				// 	if (!users.exists()) {
-
-				// 		navigation.navigate(ScreenNames.REGISTER_OTP, { phoneNumber: phoneNumber, userName: userName })
-				// 	} else {
-
-				// 		// let user = Object.values(users.val())
-				// 		let key = Object.keys(users.val())
-
-				// 		const isPresent = key.includes(phoneNumber.toString());
-
-				// 		console.warn(isPresent);
-				// 		// console.warn(user.includes(9271173131"));
-
-				// 		if (!isPresent) {
-				// 			navigation.navigate(ScreenNames.REGISTER_OTP, { phoneNumber: phoneNumber, userName: userName })
-
-				// 		} else {
-				// 			Alert.alert("Alert!", 'Already')
-				// 		}
-
-
-				// 	}
-
-
-				// });
-			} else {
-				Alert.alert('Alert!', "Please Enter Your Name")
-
-			}
+		if (checkUser) {
+			Alert.alert('Alert!', "Please Enter Valid UserName")
 
 		} else {
 
-			Alert.alert('Alert!', "Please Enter Valid Number")
+
+			let isUserAvail;
+			await firestore()
+				.collection('users')
+				// Filter results
+				.where('userName', '==', userName)
+				.get()
+				.then(querySnapshot => {
+
+
+					isUserAvail = querySnapshot.size;
+					// return 
+					/* ... */
+				});
+
+			if (isUserAvail === 1) {
+
+				Alert.alert("Alert!", 'Already UserName');
+
+			} else {
+
+				if (phoneNumber.length > 9) {
+
+					if (userName) {
+
+						firestore()
+							.collection('users')
+							.doc(`${phoneNumber}`)
+							.get()
+							.then(documentSnapshot => {
+								console.log('User exists: ', documentSnapshot.exists);
+
+								if (documentSnapshot.exists) {
+									console.log('User data: ', documentSnapshot.data());
+
+									Alert.alert("Alert!", 'Already Number')
+								} else {
+
+
+									navigation.navigate(ScreenNames.REGISTER_OTP, { phoneNumber: phoneNumber, userName: userName })
+								}
+							});
+
+					} else {
+						Alert.alert('Alert!', "Please Enter Your UserName")
+
+					}
+
+				} else {
+
+					Alert.alert('Alert!', "Please Enter Valid Number")
+				}
+
+
+			}
+
+
 		}
+
 		setLoader(false)
+
 
 	}
 	const LoginPage = () => navigation.navigate(ScreenNames.LOGIN)
 
+	const onUsernameChange = (t) => {
+		setUserName(t)
+		if (Constants.isValidUser(t).valid) {
+			// usernameRef?.current?.showHelperText(Constants.isValidUser(t).message);
+			setCheckUser(false);
+			return;
+		} {
+			setCheckUser(true);
+
+		}
+	};
 	//UseEffect
 
 	//UI
@@ -100,13 +156,14 @@ const RegisterScreen = ({ navigation }) => {
 					<Text style={{ fontFamily: Fonts.MEDIUM, fontSize: 20, color: "#00000070", marginTop: 20 }}>
 						Enter Your Phone Number and we will send SMS with confirmation code to your number
 					</Text>
-					<View style={{ marginTop: 40, height: 60, flexDirection: 'row', paddingHorizontal: 20, alignItems: 'center', borderWidth: 2, borderRadius: 20, backgroundColor: Colors.WHITE, }}>
+					<View style={{ marginTop: 40, height: 60, flexDirection: 'row', paddingHorizontal: 20, alignItems: 'center', borderWidth: 2, borderColor: checkUser ? Colors.ALERT : Colors.BLACK, borderRadius: 20, backgroundColor: Colors.WHITE, }}>
 						<TextInput
 							placeholder="Enter Name"
+							maxLength={20}
 							onBlur={() => Keyboard.dismiss()}
 							style={{ ...styles.textinput, flex: 1 }}
 							placeholderTextColor={Fonts.BLACK}
-							onChangeText={text => setUserName(text)}
+							onChangeText={text => onUsernameChange(text)}
 						/>
 					</View>
 

@@ -64,7 +64,7 @@ function BottomTabs() {
 
 				}}
 			/>
-			<Tab.Screen name="Brands" component={BrandStack}
+			<Tab.Screen name="Book" component={BrandStack}
 				options={{
 					tabBarIcon: ({ focused }) => (
 						focused ?
