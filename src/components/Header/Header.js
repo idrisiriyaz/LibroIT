@@ -14,7 +14,7 @@ import { Colors, Constants } from '../../global/index';
 
 // import Back from '../../assets/svg/Back';
 
-const Header = ({ activateLeftIcon = true, activateRightIcon, rightIconPress, title }) => {
+const Header = ({ activateLeftIcon = true, activateRightIcon, rightIcon, rightIconPress, title }) => {
 
 	const navigation = useNavigation();
 
@@ -61,7 +61,7 @@ const Header = ({ activateLeftIcon = true, activateRightIcon, rightIconPress, ti
 					onPress={rightIconPress}
 					style={styles.headerRight}>
 
-					{activateRightIcon ?
+					{activateRightIcon ? rightIcon ? rightIcon :
 						<MenuSvg /> : null}
 
 

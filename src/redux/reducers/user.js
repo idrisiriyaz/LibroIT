@@ -12,6 +12,7 @@ const initialState = {
 	referralCode: "",
 	referredByReferralCode: null,
 	isSignedIn: false,
+	highlightMessageId: 0,
 };
 
 const user = (state = initialState, action) => {

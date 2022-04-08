@@ -1,35 +1,32 @@
 import { View, Text, TextInput, FlatList, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { styles } from './InboxStyle'
-import { Colors, Constants, Fonts } from '../../global'
+import { Colors, Constants, Fonts, ScreenNames } from '../../global'
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar'
 import Header from '../../components/Header/Header'
 import SearchSvg from '../../assets/svg/search';
+import MessageSvg from '../../assets/svg/message';
 import database from '@react-native-firebase/database'
+import { connect } from 'react-redux'
+import UserItem from '../../components/UserItem/UserItem'
 
 
 
-const InboxScreen = () => {
+const InboxScreen = ({ navigation, myUserId, myUserName }) => {
 
 
 
 
-    const [chatUsers, setChatUsers] = React.useState([
-        {
-            Details: {
-                userName: "Riyaz",
-                phoneNumber: 9702586589
-            }
-        }
-    ]);
+    const [chatUsers, setChatUsers] = React.useState([]);
+
     const [search, setSearch] = React.useState([])
     const [searchText, setSearchText] = React.useState('')
     const [Loader, setLoader] = React.useState(false);
     const [requestMsgCount, setRequestMsgCount] = React.useState(0);
-    const myUserId = 9702586589;
-    const userId = 1234567890;
-    const myUserName = 9702586589;
-    const userName = 1234567890;
+    // const myUserId = 9702586589;
+    const userId = 9702586589;
+    // const myUserName = 9702586589;
+    const userName = "riyaz";
 
 
 
@@ -61,7 +58,7 @@ const InboxScreen = () => {
                     isBlock: false
 
                 })
-                // navigation?.navigate(ScreenNames.USER_CHAT_SCREEN, { userId: userId, userName: userDetails.userName, profileImage: userDetails?.profileImage })
+                navigation?.navigate(ScreenNames.CHAT, { userId: userId, userName: userName })
 
             } else {
 
@@ -71,7 +68,7 @@ const InboxScreen = () => {
 
                 if (isPresent) {
                     //already exist node
-                    // navigation?.navigate(ScreenNames.USER_CHAT_SCREEN, { userId: userId})
+                    navigation?.navigate(ScreenNames.CHAT, { userId: userId, userName: userName })
 
                 } else {
                     //new existing node
@@ -97,7 +94,7 @@ const InboxScreen = () => {
                         isOnline: false,
                         isBlock: false
                     })
-                    // navigation?.navigate(ScreenNames.USER_CHAT_SCREEN, { userId: userId, userName: userDetails.userName, profileImage: userDetails?.profileImage })
+                    navigation?.navigate(ScreenNames.CHAT, { userId: userId, userName: userName })
 
                 }
             }
@@ -105,6 +102,7 @@ const InboxScreen = () => {
 
 
     }
+    const goContact = () => navigation?.navigate(ScreenNames.CONTACT)
 
     const Search = (text) => {
         setSearchText(text)
@@ -141,22 +139,19 @@ const InboxScreen = () => {
 
     }
 
-    const _renderItem = ({ item, index }) => {
-        return (
-            <TouchableOpacity onPress={addChatLobby} >
-                <Text>{item.Details.userName}</Text>
-            </TouchableOpacity>
-        )
-    }
+
+
+    const _renderItem = ({ item, index }) => <UserItem getChatUsers={getChatUsers} messages={item.Messages} item={item.Details} navigation={navigation} myUserId={item?.Details?.myUserId} userName={item?.Details?.userName} userId={item?.Details?.userId} />
 
     React.useEffect(() => {
-        // getChatUsers()
+        getChatUsers()
     }, [])
 
     return (
         <View style={{ flex: 1, backgroundColor: Colors.WHITE }}>
+
             <FocusAwareStatusBar isLightBar={false} isTopSpace={true} />
-            <Header title={"Inbox"} />
+            <Header title={"Inbox"} activateRightIcon rightIconPress={goContact} rightIcon={<MessageSvg />} />
             <View style={{ flex: 1, backgroundColor: Colors.WHITE }} >
 
 
@@ -182,8 +177,24 @@ const InboxScreen = () => {
                     contentContainerStyle={{ marginTop: 20, marginHorizontal: 20 }}
                 />
             </View>
+
+            {/* <View style={{ justifyContent: 'center', position: 'absolute', backgroundColor: Colors.PRIMARY, borderWidth: 2, bottom: 40, left: Constants.SCREEN_WIDTH / 1.2, height: 50, width: 50, alignItems: 'center', borderRadius: 50 }}>
+                <Text>hhh</Text>
+            </View> */}
         </View >
     )
 }
 
-export default InboxScreen
+const mapStateToProps = state => ({
+    phNo: state.user.phNo,
+    myUserId: state.user.userId,
+    myUserName: state.user.name,
+    isSignedIn: state.user.isSignedIn,
+    bookItems: state.bookmark.bookItems,
+});
+
+const mapDispatchToProps = dispatch => ({ dispatch });
+
+export default connect(mapStateToProps, mapDispatchToProps)(InboxScreen);
+
+

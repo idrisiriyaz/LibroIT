@@ -73,18 +73,18 @@ const Header = ({
                 {activateRightIcon ?
                     <>
                         <TouchableOpacity
-                         onPress={midIconPress}
+                            onPress={midIconPress}
                             style={styles.headerRight}>
                             <BagSvg />
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.headerLeft, { backgroundColor: Colors.WHITE, }]}>
-                            <Text style={[styles.headerText, { textAlign: 'center' }]}>
+                            <Text style={[styles.headerText, { textAlign: 'center', paddingBottom: 2 }]}>
                                 {title}
                             </Text>
 
                         </TouchableOpacity>
-                    </> : <Text style={[styles.headerText, { fontSize: 20 }]}>
+                    </> : <Text style={[styles.headerText, { fontSize: 30 }]}>
                         LibroIT
                     </Text>
                 }

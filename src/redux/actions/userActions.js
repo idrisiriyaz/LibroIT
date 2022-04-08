@@ -40,3 +40,8 @@ export const setSignedIn = payload => ({
 export const clearSession = () => ({
 	type: actionTypes.CLEAR_SESSION,
 });
+
+export const setHighlightMessageId = payload => ({
+	type: actionTypes.SET_HIGHLIGHT_MESSAGE_ID,
+	payload,
+});

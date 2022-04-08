@@ -13,4 +13,5 @@ export const BOOK_LIST = 'BOOK_LIST';
 export const BOOK_SEARCH = 'BOOK_SEARCH';
 export const CHAT = 'CHAT';
 export const INBOX = 'INBOX';
+export const CONTACT = 'CONTACT';
 

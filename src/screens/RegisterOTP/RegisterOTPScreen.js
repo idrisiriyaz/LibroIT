@@ -35,13 +35,19 @@ const RegisterOTPScreen = ({ navigation, route: { params: { phoneNumber, userNam
 	const timerRef = React.useRef();
 
 
-	const register = async () => {
+	const register = async (phone) => {
+
+
+		let phoneNumber = parseInt(phone)
 		setLoader(true)
 		await firestore()
-			.collection('users').doc(phoneNumber).set({
+			.collection('users').doc(`${phoneNumber}`).set({
+				userId: phoneNumber,
 				userName: userName,
-				phoneNumber: phoneNumber
+				phoneNumber: phoneNumber,
+				blockUsers: []
 			}).then(() => {
+				dispatch(UserAction.setUserId(phoneNumber));
 				dispatch(UserAction.setName(userName));
 				dispatch(UserAction.setPhone(phoneNumber));
 				dispatch(UserAction.setSignedIn(true));
@@ -67,7 +73,7 @@ const RegisterOTPScreen = ({ navigation, route: { params: { phoneNumber, userNam
 
 		try {
 			await confirm.confirm(code);
-			register();
+			register(phoneNumber);
 		} catch (error) {
 
 			Alert.alert('Alert!', 'Invalid code.')

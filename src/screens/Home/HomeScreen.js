@@ -17,7 +17,7 @@ import * as Service from '../../global/Services';
 import { useNavigation } from '@react-navigation/native';
 import ProfileModal from '../../components/ProfileModal/ProfileModal';
 
-const HomeScreen = ({ name, bookItems, dispatch, isSignedIn, phNo }) => {
+const HomeScreen = ({ name, bookItems, userId, dispatch, isSignedIn, phNo }) => {
 
 	//Variables
 
@@ -33,7 +33,7 @@ const HomeScreen = ({ name, bookItems, dispatch, isSignedIn, phNo }) => {
 	const navigation = useNavigation();
 
 	const goBack = () => navigation.goBack();
-	console.warn(phNo);
+	console.warn(userId);
 
 	const [bookList, setBookList] = useState([])
 	const [bookLast, setBookLast] = useState([])
@@ -223,12 +223,13 @@ const HomeScreen = ({ name, bookItems, dispatch, isSignedIn, phNo }) => {
 
 
 			</View>
-			{/* <ProfileModal visible={visibleModal} toggleModal={toggleVisibleModal} /> */}
+			<ProfileModal visible={visibleModal} toggleModal={toggleVisibleModal} />
 		</View>
 	)
 };
 const mapStateToProps = state => ({
 	phNo: state.user.phNo,
+	userId: state.user.userId,
 	isSignedIn: state.user.isSignedIn,
 	name: state.user.name,
 	bookItems: state.bookmark.bookItems,

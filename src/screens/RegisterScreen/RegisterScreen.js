@@ -167,6 +167,12 @@ const RegisterScreen = ({ navigation }) => {
 						/>
 					</View>
 
+					{userName ? checkUser &&
+						<Text style={{ fontFamily: Fonts.MEDIUM, color: Colors.ALERT }}>
+							Please don't enter any special charecter and space except dot(.) and underscore( _ )
+						</Text> : null
+					}
+
 					<View style={{ marginVertical: 40, height: 60, flexDirection: 'row', paddingHorizontal: 20, alignItems: 'center', borderWidth: 2, borderRadius: 20, backgroundColor: Colors.WHITE, }}>
 						<Text style={{ fontFamily: Fonts.BOLD, fontSize: 18 }}>
 							+91

@@ -94,6 +94,7 @@ const OTPScreen = ({ navigation, route: { params: { number } }, params, dispatch
 					console.log('User data: ', documentSnapshot.data());
 
 					const user = documentSnapshot.data()
+					dispatch(UserAction.setUserId(user.phoneNumber));
 					dispatch(UserAction.setName(user.userName));
 					dispatch(UserAction.setPhone(user.phoneNumber));
 					dispatch(UserAction.setSignedIn(true));
@@ -101,6 +102,7 @@ const OTPScreen = ({ navigation, route: { params: { number } }, params, dispatch
 					navigation.replace(ScreenNames.BOTTOM_TABS)
 				}
 			});
+
 		setLoader(false)
 	}
 
