@@ -60,6 +60,7 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 		})
 		toggleClearChat();
 	}
+
 	const deleteChat = () => {
 		let userRef = database().ref(`UserChat/${myUserId}/${userId}`);
 		userRef.remove().then(() => {
@@ -108,6 +109,7 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 						return new Date(b.time) - new Date(a.time)
 					}));
 				} else {
+					
 					setMessages(JSON.parse(abc));
 
 				}
@@ -499,7 +501,7 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 
 				{
 					userMessage ?
-						<TouchableOpacity style={{ marginLeft: 10, }} onPress={removeBlockUsers}>
+						<TouchableOpacity style={{ marginLeft: 10, }} onPress={sendMessage}>
 							<View style={{ height: 50, width: 50, borderWidth: 2, borderRadius: 40, backgroundColor: Colors.TERTIARY, justifyContent: 'center', alignItems: 'center' }}>
 
 

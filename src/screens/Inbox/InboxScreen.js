@@ -1,4 +1,4 @@
-import { View, Text, TextInput, FlatList, TouchableOpacity } from 'react-native'
+import { View, Text, TextInput, FlatList, TouchableOpacity, PermissionsAndroid } from 'react-native'
 import React from 'react'
 import { styles } from './InboxStyle'
 import { Colors, Constants, Fonts, ScreenNames } from '../../global'
@@ -9,7 +9,9 @@ import MessageSvg from '../../assets/svg/message';
 import database from '@react-native-firebase/database'
 import { connect } from 'react-redux'
 import UserItem from '../../components/UserItem/UserItem'
-
+// import {  } from 'react-native';
+import Contacts from 'react-native-contacts';
+import firestore from '@react-native-firebase/firestore';
 
 
 const InboxScreen = ({ navigation, myUserId, myUserName }) => {
@@ -125,7 +127,7 @@ const InboxScreen = ({ navigation, myUserId, myUserName }) => {
                 // let newArrays = newArr.filter(e => typeof e.Messages != "undefined" && JSON.parse(e.Messages.messages).length > 0)
                 setChatUsers(newArr);
 
-                console.log(newArr);
+                // console.log(newArr);
 
             }
         });
@@ -144,6 +146,50 @@ const InboxScreen = ({ navigation, myUserId, myUserName }) => {
     const _renderItem = ({ item, index }) => <UserItem getChatUsers={getChatUsers} messages={item.Messages} item={item.Details} navigation={navigation} myUserId={item?.Details?.myUserId} userName={item?.Details?.userName} userId={item?.Details?.userId} />
 
     React.useEffect(() => {
+
+        PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+            {
+                'title': 'Contacts',
+                'message': 'This app would like to view your contacts.',
+                'buttonPositive': 'Please accept'
+            }
+        )
+
+
+        Contacts.getAll().then(contacts => {
+
+            const contactList = contacts.map(e => e.phoneNumbers);
+            const phoneNumbers = contactList.map(e => e[0]);
+            const filterPhone = phoneNumbers.filter(e => typeof e?.number != 'undefined');
+            const phone = filterPhone.map(e => e.number.replace(/\D/g, '').slice(-10));
+            const userPhoneNumberByContact = [...new Set(phone)]
+
+            firestore()
+                .collection('users')
+                .get()
+                .then(querySnapshot => {
+
+                    const users = [];
+                    querySnapshot.forEach(documentSnapshot => {
+                        users.push({
+                            ...documentSnapshot.data(),
+                            key: documentSnapshot.id,
+                        });
+                    })
+                    if (users) {
+                        const intersection = users.filter(element => userPhoneNumberByContact.includes(element?.phoneNumber));
+                        console.warn(intersection);
+                    }
+
+
+                })
+
+        })
+
+
+
+
         getChatUsers()
     }, [])
 
