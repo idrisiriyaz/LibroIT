@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import database from '@react-native-firebase/database'
 import moment from 'moment';
 import { connect } from 'react-redux';
-import { Colors, Constants, Fonts, GlobalStyles } from '../../global';
+import { Colors, Constants, Fonts } from '../../global';
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar';
 import Header from '../../components/Header/Header';
 import { useNavigation } from '@react-navigation/native';
@@ -11,15 +11,14 @@ import MessageItem from '../../components/MessageItem/MessageItem';
 import SendSvg from '../../assets/svg/send';
 import CrossSvg from "../../assets/svg/cross"
 import firestore from '@react-native-firebase/firestore';
+import ModalMenu from '../../components/util/ModalMenu';
+import TouchableResize from '../../components/util/TouchableResize';
+import CustomToast from '../../components/CustomToast/CustomToast';
+
 
 
 const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName } } }) => {
 
-	const navigation = useNavigation()
-
-	const goBack = () => navigation.goBack();
-
-	// console.log("userId", userId, "myUserId", myUserId, "userName", userName);
 	//ref
 	const flatlistRef = React.useRef(null)
 
@@ -41,19 +40,16 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 	const [isAskTypeModalVisible, setAskTypeModalVisible] = React.useState(false);;
 	const [blockOtherUser, setOtherBlockUser] = React.useState(false);
 
-
-
 	//toggle
-	const toggleAttachmentModal = () => setVisibilityAttachmentModal(!isVisibleAttachmentModal)
 	const toggleClearChat = () => setModalVisible(!modalVisible)
-	const toggleAskImageTypeModal = () => setAskTypeModalVisible(!isAskTypeModalVisible);
-
 
 	//navigate
-	const goProfile = () => navigation.navigate(ScreenNames.PROFILE, { otherUserId: userId })
+	const navigation = useNavigation()
 
 	//function
 	const clearChat = () => {
+
+
 		let userRef = database().ref(`UserChat/${myUserId}/${userId}/Messages`);
 		userRef.remove().then(() => {
 			console.log("successfully removed reference")
@@ -61,16 +57,6 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 		toggleClearChat();
 	}
 
-	const deleteChat = () => {
-		let userRef = database().ref(`UserChat/${myUserId}/${userId}`);
-		userRef.remove().then(() => {
-			console.log("successfully removed reference")
-		})
-		toggleClearChat();
-
-		navigation.pop();
-		// getChatUsers();
-	}
 	const getDetails = () => {
 
 		database().ref(`UserChat/${myUserId}/${userId}/Details`).on('value', messages => {
@@ -109,7 +95,7 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 						return new Date(b.time) - new Date(a.time)
 					}));
 				} else {
-					
+
 					setMessages(JSON.parse(abc));
 
 				}
@@ -121,22 +107,21 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 
 
 	const checkBlock = async () => {
-
+		setIsLoading(true)
 
 		try {
 			try {
 				let blockUsers = [];
 
-				firestore()
+				await firestore()
 					.collection('users').doc(`${myUserId}`)
 					.get()
 					.then(querySnapshot => {
 
 						blockUsers = querySnapshot.data().blockUsers
 						let isblockUsers = blockUsers.includes(userId)
-						// console.log("my", isblockUsers);
 						setBlockUser(isblockUsers)
-						// console.log('Total users: ', querySnapshot.data().blockUsers);
+
 					});
 
 
@@ -145,8 +130,7 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 			}
 
 
-			// const response = await Service.checkBlock(myUserId, userId)
-			// setBlockUser(response.data)
+			setIsLoading(false)
 		} catch (error) {
 			console.warn(error);
 		}
@@ -157,11 +141,13 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 
 
 	const checkOtherBlock = async () => {
-		// setIsLoading(true)
+
+
+		setIsLoading(true)
 		try {
 			let blockUsers = [];
 
-			firestore()
+			await firestore()
 				.collection('users').doc(`${userId}`)
 				.get()
 				.then(querySnapshot => {
@@ -169,7 +155,6 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 					blockUsers = querySnapshot.data().blockUsers
 					let isblockUsers = blockUsers.includes(myUserId)
 					setOtherBlockUser(isblockUsers)
-					// console.log('Total users: ', querySnapshot.data().blockUsers);
 				});
 
 		} catch (error) {
@@ -177,52 +162,54 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 		}
 
 
-		// setIsLoading(false)
+		setIsLoading(false)
 	}
 
 	const addBlockUsers = async () => {
 
-
+		setIsLoading(true)
 		try {
 
-			firestore()
+			await firestore()
 				.doc(`users/${myUserId}`)
 				.update({
 					blockUsers: firestore.FieldValue.arrayUnion(userId),
 				});
-
-
-			// const response1 = await Service.blockUser(myUserId, userId);
-			// navigation.pop(2)
-
+			checkBlock()
+			checkOtherBlock()
+			setModalVisible(false);
 
 		} catch (error) {
 			console.log('ProfileScreen [getUserDataFunc]', error);
 		}
 
+		setIsLoading(false)
 
 	};
 
 
-
-
 	const removeBlockUsers = async () => {
+
+		setIsLoading(true)
 		try {
 
-			firestore()
+			await firestore()
 				.doc(`users/${myUserId}`)
 				.update({
 					blockUsers: firestore.FieldValue.arrayRemove(userId),
 				});
 
+			checkBlock()
+			checkOtherBlock()
+			setModalVisible(false);
 
 		} catch (error) {
 			console.log('ProfileScreen [getUserDataFunc]', error);
 		}
+		setIsLoading(false)
 	};
 
 	const isOnlineUser = async () => {
-		// console.log(`UserChat/${userId}/${myUserId}/Details`);
 		database()
 			.ref(`UserChat/${userId}/${myUserId}/Details`)
 			.update({
@@ -255,7 +242,6 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 
 				counter = messageCounter.val().counter
 
-
 			}
 			const users = [{
 				myUserId: myUserId,
@@ -282,6 +268,7 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 				userSeen: [myUserId],
 				senderId: myUserId,
 				senderName: myUserName,
+				isHide: false,
 			}
 			if (replaydata != null) {
 				message = { ...message, reply: true, replyMessageDetails: replaydata }
@@ -324,7 +311,7 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 
 
 
-	const _renderItem = ({ item }) => <MessageItem userName={item.senderName} item={item} myUserId={myUserId} message={Messages} flatlistRef={flatlistRef} setReplaydata={setReplaydata} setCustomToast={setCustomToast} />
+	const _renderItem = ({ item }) => <MessageItem otherDetails={otherDetails} details={details} userName={item.senderName} item={item} myUserId={myUserId} userId={userId} message={Messages} flatlistRef={flatlistRef} setReplaydata={setReplaydata} setCustomToast={setCustomToast} />
 
 	React.useEffect(() => {
 		getDetails();
@@ -338,7 +325,10 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 	}, [])
 
 	React.useEffect(() => {
+
+
 		setTimeout(() => {
+
 			if (flatlistRef.current != null) {
 				const unSeenCount = Messages.map(e => {
 					if (e.userSeen.filter(i => i == myUserId).length > 0) {
@@ -348,6 +338,9 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 					}
 				}
 				)
+
+				// console.warn(unSeenCount);
+
 				if (unSeenCount.filter(e => e == false).length > 0) {
 
 					const response = Messages.map(e => {
@@ -375,12 +368,13 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 					for (let index = 0; index < users.length; index++) {
 						chatr[`/UserChat/${users[index].myUserId}/${users[index].userId}/Messages`] = updatedMessage
 					}
-
 					database().ref().update(chatr);
 				}
 			}
 
 		}, 2000)
+
+
 	}, [Messages])
 
 
@@ -390,128 +384,158 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 			behavior={Platform.OS === 'ios' ? "padding" : null} style={{ backgroundColor: Colors.WHITE, flex: 1 }}>
 			<FocusAwareStatusBar isLightBar={false} isTopSpace={true} />
 
-			<Header title={userName} activateRightIcon={true} />
-			<View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.MUNSELL, }} >
-				<Text style={{ fontSize: 12, paddingBottom: 2, fontFamily: Fonts.BOLD, color: isOnline ? Colors.SECONDARY : Colors.ALERT }} >{isOnline ? "Online" : "Offline"}</Text>
-			</View>
+			<Header title={userName} activateRightIcon={true} rightIconPress={toggleClearChat} />
+			{/* <ModalMenu /> */}
 
-			<View style={{ flex: 1, justifyContent: "center", backgroundColor: Colors.WHITE, paddingTop: 20 }}>
-				{
-					Messages
-					&&
-					<FlatList
-						data={Messages}
-						inverted={true}
-						ref={flatlistRef}
-						keyExtractor={(item, index) => index.toString()}
-						renderItem={_renderItem}
-						contentContainerStyle={{ marginHorizontal: 20, marginTop: 20, paddingBottom: 20 }}
-						showsVerticalScrollIndicator={false}
-					/>
-					// Object.keys(Messages.val()).map(e => renderItem(e))
-				}
-			</View>
-			{/* <View style={{ alignItems: "flex-end", justifyContent: "center", flexDirection: "row", backgroundColor: Colors.WHITE }}>
+			{isLoading ? <ActivityIndicator size={'large'} color={Colors.PRIMARY} /> : blockOtherUser || blockUser ?
+				<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+					{blockUser ?
 
-				<TextInput
-					onChangeText={(e) => setUserMessage(e)}
-					ref={userMessageRef}
-					placeholderTextColor={Colors.GRAY_DARK}
-					placeholder="Message"
-					style={styles.TextInput}
-					showsVerticalScrollIndicator
-				/> */}
+						<View>
+							<Text style={[styles.acceptText, { alignSelf: "center" }]} >You have blocked {userName}</Text>
+							<Text style={[styles.acceptText, { alignSelf: "center" }]} >You can't chat with {userName}</Text>
+							<TouchableResize onPress={removeBlockUsers} style={[styles.acception]}>
+								<Text style={[styles.acceptText, { alignSelf: "center" }]} >Unblock</Text>
+							</TouchableResize>
+						</View>
 
-			{/* <TouchableOpacity style={{ height: 46, justifyContent: "center", width: 70 }} onPress={sendMessage}>
-				<Text style={{ fontFamily: Fonts.MEDIUM, fontSize: Fonts.SIZE_16, color: Colors.PRIMARY }}> SEND</Text>
-			</TouchableOpacity> */}
-			{
-				replaydata &&
-				<View style={{
-					justifyContent: 'center', backgroundColor: '#fff', marginHorizontal: 20, borderRadius: 16,
-					padding: 10,
-					borderBottomRightRadius: replaydata ? 0 : 16,
-					borderBottomLeftRadius: replaydata ? 0 : 16,
-					borderWidth: 2,
-					borderBottomWidth: 0,
-					borderColor: Colors.BLACK,
-					marginRight: userMessage ? 80 : 20,
+						: <Text style={[styles.acceptText, { alignSelf: "center" }]} >You're Blocked</Text>}
 
-				}}>
-					<TouchableOpacity
-						onPress={() => {
-							setReplaydata(null)
-						}}
-						style={{ position: "absolute", zIndex: 100, right: 16, top: 16, height: 20, width: 20, backgroundColor: Colors.WHITE + 50, borderRadius: 10, alignItems: "center", justifyContent: "center" }}>
-						<CrossSvg />
-					</TouchableOpacity>
+				</View>
+				:
+				<>
+					<View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.MUNSELL, }} >
+						<Text style={{ fontSize: 12, paddingBottom: 2, fontFamily: Fonts.BOLD, color: isOnline ? Colors.SECONDARY : Colors.ALERT }} >{isOnline ? "Online" : "Offline"}</Text>
+					</View>
+					<View style={{ flex: 1, justifyContent: "center", backgroundColor: Colors.WHITE, paddingTop: 20 }}>
+						{
+							Messages
+							&&
+							<FlatList
+								data={Messages}
+								inverted={true}
+								ref={flatlistRef}
+								keyExtractor={(item, index) => index.toString()}
+								renderItem={_renderItem}
+								contentContainerStyle={{ marginHorizontal: 20, marginTop: 20, paddingBottom: 20 }}
+								showsVerticalScrollIndicator={false}
+							/>
+						}
+					</View>
 
-					<View style={{
-						flexDirection: 'row',
-						borderLeftColor: Colors.BLACK,
-						borderLeftWidth: 4, padding: 4,
-						borderColor: Colors.BLACK,
-						borderWidth: 1,
-						borderRadius: 10,
-						backgroundColor: Colors.GRAY_LIGHT,
-						justifyContent: "space-between"
-					}} >
-						<View style={{ justifyContent: "space-between" }}>
-							<Text style={{
-								color: Colors.BLACK, fontFamily: Fonts.BOLD
-							}}>{replaydata.senderId == userId ? "You" : replaydata.senderName}</Text>
-							<View style={{ flexDirection: 'row' }}>
-								<Text numberOfLines={2} style={{ color: Colors.GRAY_DARK, fontFamily: Fonts.MEDIUM, maxWidth: Constants.SCREEN_WIDTH / 1.4 }} >{replaydata?.message}</Text>
+
+					{
+						replaydata &&
+						<View style={{
+							justifyContent: 'center', backgroundColor: '#fff', marginHorizontal: 20, borderRadius: 16,
+							padding: 10,
+							borderBottomRightRadius: replaydata ? 0 : 16,
+							borderBottomLeftRadius: replaydata ? 0 : 16,
+							borderWidth: 2,
+							borderBottomWidth: 0,
+							borderColor: Colors.BLACK,
+							marginRight: userMessage ? 80 : 20,
+
+						}}>
+							<TouchableOpacity
+								onPress={() => {
+									setReplaydata(null)
+								}}
+								style={{ position: "absolute", zIndex: 100, right: 16, top: 16, height: 20, width: 20, backgroundColor: Colors.WHITE + 50, borderRadius: 10, alignItems: "center", justifyContent: "center" }}>
+								<CrossSvg />
+							</TouchableOpacity>
+
+							<View style={{
+								flexDirection: 'row',
+								borderLeftColor: Colors.BLACK,
+								borderLeftWidth: 4, padding: 4,
+								borderColor: Colors.BLACK,
+								borderWidth: 1,
+								borderRadius: 10,
+								backgroundColor: Colors.GRAY_LIGHT,
+								justifyContent: "space-between"
+							}} >
+								<View style={{ justifyContent: "space-between" }}>
+									<Text style={{
+										color: Colors.BLACK, fontFamily: Fonts.BOLD
+									}}>{replaydata.senderId == myUserId ? "You" : replaydata.senderName}</Text>
+									<View style={{ flexDirection: 'row' }}>
+										<Text numberOfLines={2} style={{ color: Colors.GRAY_DARK, fontFamily: Fonts.MEDIUM, maxWidth: Constants.SCREEN_WIDTH / 1.4 }} >{replaydata?.message}</Text>
+									</View>
+								</View>
 							</View>
 						</View>
+					}
+					<View style={{ alignItems: "center", justifyContent: 'space-between', flexDirection: "row", backgroundColor: Colors.WHITE, marginHorizontal: 20, marginBottom: 20, }}>
+
+						<View style={{
+							height: 60, borderTopRightRadius: replaydata ? 0 : 16,
+							borderTopLeftRadius: replaydata ? 0 : 16,
+							borderTopWidth: replaydata ? 0 : 2,
+							flexDirection: 'row',
+							paddingHorizontal: 20, flex: 1,
+							borderWidth: 2,
+							borderRadius: 16,
+							backgroundColor: Colors.WHITE,
+						}} >
+							<TextInput
+								// autoFocus
+								onChangeText={(e) => setUserMessage(e)}
+								ref={userMessageRef}
+								placeholderTextColor={Colors.GRAY_DARK}
+								placeholder="Message"
+								style={styles.TextInput}
+								showsVerticalScrollIndicator
+							/>
+
+						</View>
+
+						{
+							userMessage ?
+								<TouchableOpacity style={{ marginLeft: 10, }} onPress={sendMessage}>
+									<View style={{ height: 50, width: 50, borderWidth: 2, borderRadius: 40, backgroundColor: Colors.TERTIARY, justifyContent: 'center', alignItems: 'center' }}>
+
+										<SendSvg />
+
+									</View>
+								</TouchableOpacity> : null
+						}
+
 					</View>
-				</View>
-			}
-			<View style={{ alignItems: "center", justifyContent: 'space-between', flexDirection: "row", backgroundColor: Colors.WHITE, marginHorizontal: 20, marginBottom: 20, }}>
+				</>}
 
-				{/* <View style={{ height: 60, borderWidth: 2, borderRadius: 40, backgroundColor: Colors.PRIMARY, left: 4, top: 6, width: Constants.SCREEN_WIDTH * 0.80 }}></View> */}
+			<ModalMenu
+				modalVisible={modalVisible}
+				setModalVisible={setModalVisible}>
 
+				<TouchableResize style={{ margin: 6 }}
+					onPress={clearChat} >
+					<Text style={{ fontFamily: Fonts.BOLD, color: Colors.ALERT, paddingBottom: 2, }} >Delete Chat</Text>
+				</TouchableResize>
+				<TouchableResize style={{ margin: 6 }}
+					onPress={() => {
+						if (blockUser) {
+							removeBlockUsers();
+						} else {
+							addBlockUsers();
+						}
+					}} >
+					{isLoading ? <ActivityIndicator color={Colors.SECONDARY} size='small' /> : <Text style={{ fontFamily: Fonts.BOLD, paddingBottom: 2, }} >{blockUser ? "Unblock" : "Block"} User</Text>}
+				</TouchableResize>
 
-				<View style={{
-					height: 60, borderTopRightRadius: replaydata ? 0 : 16,
-					borderTopLeftRadius: replaydata ? 0 : 16,
-					borderTopWidth: replaydata ? 0 : 2,
-					flexDirection: 'row',
-					paddingHorizontal: 20, flex: 1,
-					borderWidth: 2,
-					borderRadius: 16,
-					backgroundColor: Colors.WHITE,
-				}} >
-					{/* <SearchSvg /> */}
-					{/* <Text style={{ fontFamily: Fonts.BOLD, marginLeft: 10, fontSize: Fonts.SIZE_16 }}>
-							Search
-						</Text> */}
-					<TextInput
-						// autoFocus
-						onChangeText={(e) => setUserMessage(e)}
-						ref={userMessageRef}
-						placeholderTextColor={Colors.GRAY_DARK}
-						placeholder="Message"
-						style={styles.TextInput}
-						showsVerticalScrollIndicator
-					/>
-
-				</View>
+				{/* <TouchableResize onPress={deleteChat} >
+							<Text>Delete Chat</Text>
+						</TouchableResize> */}
 
 
-				{
-					userMessage ?
-						<TouchableOpacity style={{ marginLeft: 10, }} onPress={sendMessage}>
-							<View style={{ height: 50, width: 50, borderWidth: 2, borderRadius: 40, backgroundColor: Colors.TERTIARY, justifyContent: 'center', alignItems: 'center' }}>
+			</ModalMenu>
+			<CustomToast
+				isToastMsgVisible={customToast}
+				toastMsg={"Message Copied!"}
+				setCustomToast={setCustomToast}
+				top={Constants.SCREEN_HEIGHT - 300}
+			/>
 
-
-								<SendSvg />
-
-							</View>
-						</TouchableOpacity> : null
-				}
-
-			</View>
 			{/* </View> */}
 		</KeyboardAvoidingView >
 	);
@@ -523,6 +547,16 @@ const styles = StyleSheet.create({
 		fontFamily: Fonts.MEDIUM,
 		color: Colors.BLACK
 	},
+	acception: {
+		backgroundColor: Colors.PRIMARY,
+		padding: 10,
+		margin: 20,
+		borderRadius: 10,
+		borderWidth: 2,
+		justifyContent: 'center',
+		alignItems: 'center'
+	},
+	acceptText: { color: Colors.BLACK, fontFamily: Fonts.BOLD, padding: 2 }
 })
 const mapStateToProps = state => ({
 	phNo: state.user.phNo,

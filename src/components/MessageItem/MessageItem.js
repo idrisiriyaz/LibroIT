@@ -1,21 +1,28 @@
 import moment from 'moment';
 import React from 'react'
-import { Linking, StyleSheet, Text, View, Image, Animated, Clipboard, TouchableOpacity } from 'react-native'
+import { Linking, StyleSheet, Text, View, Image, Animated, TouchableOpacity } from 'react-native'
 import HyperLink from 'react-native-hyperlink';
 import { Colors, Constants, Fonts } from '../../global';
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 import { connect } from 'react-redux';
 import * as UserActions from '../../redux/actions/userActions';
+import DoubleTick from '../../assets/svg/DoubleTick.svg';
+import BlueTick from '../../assets/svg/BlueTick.svg'
+import database from '@react-native-firebase/database'
+import ModalMenu from '../util/ModalMenu';
+import TouchableResize from '../util/TouchableResize';
+import Clipboard from '@react-native-community/clipboard';
 
 
-
-const MessageItem = ({ item, myUserId, message, flatlistRef, setCustomToast, setReplaydata, highlightMessageId, dispatch }) => {
+const MessageItem = ({ item, myUserId, details, otherDetails, userId, message, flatlistRef, setCustomToast, setReplaydata, highlightMessageId, dispatch }) => {
 
     const [textShown, setTextShown] = React.useState(false); //To show ur remaining Text
     const [lengthMore, setLengthMore] = React.useState(0); //to show the "Read more & Less Line"
     const [imageHeightWidth, setImageHeightWidth] = React.useState(null)
     const [urlPreview, setUrlPreview] = React.useState(null)
+    const [modalVisible, setModalVisible] = React.useState(false);
 
+    const toggleChat = () => setModalVisible(!modalVisible)
 
     // function test(url) {
     //     var mat = url.match(/(https?:\/\/[^ ]*)/)
@@ -26,9 +33,60 @@ const MessageItem = ({ item, myUserId, message, flatlistRef, setCustomToast, set
     //     }
 
     // }
+    // console.warn(message);
+
+    const messageOption = () => {
 
 
 
+
+
+
+
+
+    }
+
+    const deleteMessage = () => {
+        const users = [{
+            myUserId: myUserId,
+            userId: `${userId}`,
+        }, {
+            myUserId: `${userId}`,
+            userId: myUserId
+        }]
+        const userDetails = [
+            { ...details, updateDate: Date.now() },
+            { ...otherDetails, updateDate: Date.now() }
+        ]
+
+
+        let messageHide = [{ ...item, isHide: true }]
+
+        let messageNew = message.map(obj => messageHide.find(o => o.messageId === obj.messageId) || obj);
+
+        console.warn(messageNew);
+
+        let updatedMessage = {
+            "messages": JSON.stringify(messageNew)
+        }
+
+        let chatr = {
+        }
+
+        for (let index = 0; index < users.length; index++) {
+            chatr[`/UserChat/${users[index].myUserId}/${users[index].userId}/Messages`] = updatedMessage
+            chatr[`/UserChat/${users[index].myUserId}/${users[index].userId}/Details`] = userDetails[index]
+        }
+
+        database().ref().update(chatr);
+        toggleChat();
+    }
+
+    const copyMessage = () => {
+        Clipboard.setString(item.message);
+        setCustomToast(true)
+        toggleChat()
+    }
     const toggleNumberOfLine = () => {
         setTextShown(!textShown);
     };
@@ -82,19 +140,23 @@ const MessageItem = ({ item, myUserId, message, flatlistRef, setCustomToast, set
     return (
         <GestureRecognizer
             onSwipeRight={(state) => {
-                Animated.timing(right, {
-                    toValue: 50,
-                    duration: 200,
-                    useNativeDriver: false
-                }).start(() => {
+
+                if (!item.isHide) {
+
                     Animated.timing(right, {
-                        toValue: 0,
+                        toValue: 50,
                         duration: 200,
                         useNativeDriver: false
-                    }).start()
-                })
-                if (typeof setReplaydata != "undefined") {
-                    setReplaydata(item)
+                    }).start(() => {
+                        Animated.timing(right, {
+                            toValue: 0,
+                            duration: 200,
+                            useNativeDriver: false
+                        }).start()
+                    })
+                    if (typeof setReplaydata != "undefined") {
+                        setReplaydata(item)
+                    }
                 }
             }}
             config={config}
@@ -102,22 +164,35 @@ const MessageItem = ({ item, myUserId, message, flatlistRef, setCustomToast, set
         >
             <Animated.View style={{ backgroundColor: Colors.BLACK, position: "absolute", top: 0, left: 10, right: 10, bottom: 5, opacity: opacity, borderRadius: 10 }} />
             <Animated.View style={{ alignItems: item.senderId == myUserId ? "flex-end" : "flex-start", position: "relative", left: right }}>
-                <Text style={{
-                    fontFamily: Fonts.MEDIUM,
-                    color: Colors.DARK_JUNGLE_GREEN,
-                    fontSize: 10,
-                    opacity: 0.4,
-                    position: 'absolute'
-                }}>{item.senderId == myUserId ? `You, ${moment(item.time).fromNow()}` : `${item.senderName}, ${moment(item.time).fromNow()}`}</Text>
 
-                <View style={{
-                    justifyContent: 'center',
-                    backgroundColor: item.senderId == myUserId ? Colors.WHITE : Colors.PRIMARY + 20,
-                    borderColor: Colors.BLACK, borderWidth: 2, marginVertical: 16,
-                    borderRadius: 16,
-                    maxWidth: Constants.SCREEN_WIDTH / 1.5,
-                    padding: 10, borderTopLeftRadius: item.senderId == myUserId ? null : 0, borderBottomRightRadius: item.senderId == myUserId ? 0 : null
-                }}>
+                {
+                    modalVisible ? <View style={{ flexDirection: 'row', width: Constants.SCREEN_WIDTH / 2, justifyContent: 'space-evenly', height: 40, alignItems: 'center', }} >
+                        <TouchableResize onPress={deleteMessage} style={{ backgroundColor: Colors.WHITE, padding: 6, borderRadius: 6, borderWidth: 2 }} >
+                            <Text style={{ fontFamily: Fonts.BOLD, paddingBottom: 2, color: Colors.ALERT }} >Delete</Text>
+                        </TouchableResize>
+
+                        <TouchableResize onPress={copyMessage} style={{ backgroundColor: Colors.WHITE, padding: 6, borderRadius: 6, borderWidth: 2 }} >
+                            <Text style={{ fontFamily: Fonts.BOLD, paddingBottom: 2, color: Colors.SECONDARY }} >Copy</Text>
+                        </TouchableResize>
+
+                    </View> : null
+                }
+                <TouchableOpacity
+
+                    onLongPress={() => {
+                        if (item.senderId == myUserId) {
+                            toggleChat()
+                        }
+                    }}
+
+                    style={{
+                        justifyContent: 'center',
+                        backgroundColor: item.senderId == myUserId ? Colors.WHITE : Colors.PRIMARY + 20,
+                        borderColor: Colors.BLACK, borderWidth: 2, marginVertical: 16,
+                        borderRadius: 16,
+                        minWidth: Constants.SCREEN_WIDTH / 3.6,
+                        padding: 10, borderTopLeftRadius: item.senderId == myUserId ? null : 0, borderBottomRightRadius: item.senderId == myUserId ? 0 : null
+                    }}>
 
                     {
                         typeof item.reply != "undefined"
@@ -144,17 +219,18 @@ const MessageItem = ({ item, myUserId, message, flatlistRef, setCustomToast, set
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
 
 
-                        <View><HyperLink
-                            linkStyle={{ color: Colors.SECONDARY }}
-                            onLongPress={(url, text) => {
-                                Clipboard.setString(url);
-                                setCustomToast(true)
-                            }}
-                            onPress={(url, text) => Linking.openURL(url)}>
-                            <Text numberOfLines={textShown ? undefined : 6} onTextLayout={onTextLayout} style={{ fontSize: 15, color: Colors.BLACK, fontFamily: Fonts.BOLD }}>
-                                {item.message}
-                            </Text>
-                        </HyperLink>
+                        <View>
+                            <HyperLink
+                                linkStyle={{ color: Colors.SECONDARY }}
+                                onLongPress={(url, text) => {
+                                    Clipboard.setString(url);
+                                    setCustomToast(true)
+                                }}
+                                onPress={(url, text) => Linking.openURL(url)}>
+                                <Text numberOfLines={textShown ? undefined : 6} onTextLayout={onTextLayout} style={{ fontSize: 15, fontStyle: item.isHide ? 'italic' : 'normal', marginHorizontal: 4, color: Colors.BLACK, paddingBottom: 2, fontFamily: Fonts.BOLD, maxWidth: Constants.SCREEN_WIDTH / 1.6 }}>
+                                    {item.isHide ? "You deleted this message" : item.message}
+                                </Text>
+                            </HyperLink>
                             {lengthMore ? (
                                 <Text
                                     onPress={toggleNumberOfLine}
@@ -167,9 +243,33 @@ const MessageItem = ({ item, myUserId, message, flatlistRef, setCustomToast, set
                                     {textShown ? 'Less' : 'Read more'}
                                 </Text>
                             ) : null}
+
+
+
                         </View>
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                            <Text style={{ color: '#00000050', fontSize: 12, alignSelf: 'flex-end', fontFamily: Fonts.MEDIUM }}>{moment(item.time).format('LT')}</Text>
+
+                            {/* <SingleTickNew /> */}
+                            {
+                                item.senderId == myUserId
+                                    ?
+                                    <>
+                                        {
+                                            item.userSeen.filter(e => e == userId).length > 0
+                                                ?
+                                                <BlueTick />
+                                                :
+                                                <DoubleTick />
+                                        }
+                                    </>
+                                    :
+                                    null
+                            }
+                        </View>
+
                     </View>
-                </View>
+                </TouchableOpacity>
             </Animated.View>
         </GestureRecognizer>
     )

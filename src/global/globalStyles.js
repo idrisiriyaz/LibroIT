@@ -12,6 +12,16 @@ export const globalStyles = StyleSheet.create({
 		marginHorizontal: 20,
 		marginBottom: 15
 	},
+	Btn: {
+		height: 50,
+		backgroundColor: Colors.PRIMARY,
+		borderRadius: 30,
+		justifyContent: "center", alignItems: "center",
+		marginHorizontal: 20,
+		marginBottom: 15,
+		borderWidth: 2,
+		
+	},
 	buttonText: {
 		fontFamily: Fonts.BOLD,
 		fontSize: 18,

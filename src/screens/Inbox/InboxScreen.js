@@ -1,4 +1,4 @@
-import { View, Text, TextInput, FlatList, TouchableOpacity, PermissionsAndroid } from 'react-native'
+import { View, Text, TextInput, FlatList, ActivityIndicator } from 'react-native'
 import React from 'react'
 import { styles } from './InboxStyle'
 import { Colors, Constants, Fonts, ScreenNames } from '../../global'
@@ -9,9 +9,6 @@ import MessageSvg from '../../assets/svg/message';
 import database from '@react-native-firebase/database'
 import { connect } from 'react-redux'
 import UserItem from '../../components/UserItem/UserItem'
-// import {  } from 'react-native';
-import Contacts from 'react-native-contacts';
-import firestore from '@react-native-firebase/firestore';
 
 
 const InboxScreen = ({ navigation, myUserId, myUserName }) => {
@@ -19,7 +16,7 @@ const InboxScreen = ({ navigation, myUserId, myUserName }) => {
 
 
 
-    const [chatUsers, setChatUsers] = React.useState([]);
+    const [chatUsers, setChatUsers] = React.useState(null);
 
     const [search, setSearch] = React.useState([])
     const [searchText, setSearchText] = React.useState('')
@@ -32,78 +29,7 @@ const InboxScreen = ({ navigation, myUserId, myUserName }) => {
 
 
 
-    const addChatLobby = async () => {
 
-        database().ref(`UserChat/${myUserId}`).once('value', chat => {
-
-            if (!chat.exists()) {
-                //new node 
-                database().ref(`UserChat/${myUserId}/${userId}/Details`).set({
-                    myUserId: myUserId,
-                    userId: userId,
-                    myUserName: myUserName,
-                    userName: userName,
-                    createDate: Date.now(),
-                    updateDate: Date.now(),
-                    isOnline: false,
-                    isBlock: false
-                })
-
-                database().ref(`UserChat/${userId}/${myUserId}/Details`).set({
-                    myUserId: userId,
-                    userId: myUserId,
-                    myUserName: userName,
-                    userName: myUserName,
-                    createDate: Date.now(),
-                    updateDate: Date.now(),
-                    isOnline: false,
-                    isBlock: false
-
-                })
-                navigation?.navigate(ScreenNames.CHAT, { userId: userId, userName: userName })
-
-            } else {
-
-                let key = Object.keys(chat.val())
-                const isPresent = key.includes(userId.toString());
-
-
-                if (isPresent) {
-                    //already exist node
-                    navigation?.navigate(ScreenNames.CHAT, { userId: userId, userName: userName })
-
-                } else {
-                    //new existing node
-                    database().ref(`UserChat/${myUserId}/${userId}/Details`).set({
-                        myUserId: myUserId,
-                        userId: userId,
-                        myUserName: myUserName,
-                        userName: userName,
-                        createDate: Date.now(),
-                        updateDate: Date.now(),
-                        isOnline: false,
-                        isBlock: false
-
-                    })
-
-                    database().ref(`UserChat/${userId}/${myUserId}/Details`).set({
-                        myUserId: userId,
-                        userId: myUserId,
-                        myUserName: userName,
-                        userName: myUserName,
-                        createDate: Date.now(),
-                        updateDate: Date.now(),
-                        isOnline: false,
-                        isBlock: false
-                    })
-                    navigation?.navigate(ScreenNames.CHAT, { userId: userId, userName: userName })
-
-                }
-            }
-        })
-
-
-    }
     const goContact = () => navigation?.navigate(ScreenNames.CONTACT)
 
     const Search = (text) => {
@@ -116,7 +42,7 @@ const InboxScreen = ({ navigation, myUserId, myUserName }) => {
 
         setLoader(true)
         // console.warn(myUserId)
-        database().ref(`/UserChat/${myUserId}`).once('value', chatUsers => {
+        database().ref(`/UserChat/${myUserId}`).on('value', chatUsers => {
             if (!chatUsers.exists()) {
                 setChatUsers([])
             } else {
@@ -124,8 +50,8 @@ const InboxScreen = ({ navigation, myUserId, myUserName }) => {
 
                 let newArr = arr.sort((a, b) => new Date(b.Details?.updateDate) - new Date(a.Details?.updateDate));
 
-                // let newArrays = newArr.filter(e => typeof e.Messages != "undefined" && JSON.parse(e.Messages.messages).length > 0)
-                setChatUsers(newArr);
+                let newArrays = newArr.filter(e => typeof e.Messages != "undefined" && JSON.parse(e.Messages.messages).length > 0)
+                setChatUsers(newArrays);
 
                 // console.log(newArr);
 
@@ -146,50 +72,6 @@ const InboxScreen = ({ navigation, myUserId, myUserName }) => {
     const _renderItem = ({ item, index }) => <UserItem getChatUsers={getChatUsers} messages={item.Messages} item={item.Details} navigation={navigation} myUserId={item?.Details?.myUserId} userName={item?.Details?.userName} userId={item?.Details?.userId} />
 
     React.useEffect(() => {
-
-        PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-            {
-                'title': 'Contacts',
-                'message': 'This app would like to view your contacts.',
-                'buttonPositive': 'Please accept'
-            }
-        )
-
-
-        Contacts.getAll().then(contacts => {
-
-            const contactList = contacts.map(e => e.phoneNumbers);
-            const phoneNumbers = contactList.map(e => e[0]);
-            const filterPhone = phoneNumbers.filter(e => typeof e?.number != 'undefined');
-            const phone = filterPhone.map(e => e.number.replace(/\D/g, '').slice(-10));
-            const userPhoneNumberByContact = [...new Set(phone)]
-
-            firestore()
-                .collection('users')
-                .get()
-                .then(querySnapshot => {
-
-                    const users = [];
-                    querySnapshot.forEach(documentSnapshot => {
-                        users.push({
-                            ...documentSnapshot.data(),
-                            key: documentSnapshot.id,
-                        });
-                    })
-                    if (users) {
-                        const intersection = users.filter(element => userPhoneNumberByContact.includes(element?.phoneNumber));
-                        console.warn(intersection);
-                    }
-
-
-                })
-
-        })
-
-
-
-
         getChatUsers()
     }, [])
 
@@ -214,19 +96,19 @@ const InboxScreen = ({ navigation, myUserId, myUserName }) => {
                             placeholder='Search' style={{ flex: 1, fontFamily: Fonts.BOLD, fontSize: Fonts.SIZE_16 }} />
                     </View>
                 </View>
+                {
+                    chatUsers == null ? <ActivityIndicator size={'large'} color={Colors.PRIMARY} /> :
+                        <FlatList
+                            ListEmptyComponent={listNoChatUsers}
+                            data={searchText.length > 0 ? search : chatUsers}
+                            keyExtractor={(item, index) => `${JSON.stringify(item)}`}
+                            renderItem={_renderItem}
+                            contentContainerStyle={{ marginTop: 20, marginHorizontal: 20 }}
+                        />
+                }
 
-                <FlatList
-                    ListEmptyComponent={listNoChatUsers}
-                    data={searchText.length > 0 ? search : chatUsers}
-                    keyExtractor={(item, index) => `${JSON.stringify(item)}`}
-                    renderItem={_renderItem}
-                    contentContainerStyle={{ marginTop: 20, marginHorizontal: 20 }}
-                />
             </View>
 
-            {/* <View style={{ justifyContent: 'center', position: 'absolute', backgroundColor: Colors.PRIMARY, borderWidth: 2, bottom: 40, left: Constants.SCREEN_WIDTH / 1.2, height: 50, width: 50, alignItems: 'center', borderRadius: 50 }}>
-                <Text>hhh</Text>
-            </View> */}
         </View >
     )
 }

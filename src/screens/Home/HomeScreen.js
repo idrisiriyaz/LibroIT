@@ -16,12 +16,14 @@ import * as BookAction from '../../redux/actions/bookAction'
 import * as Service from '../../global/Services';
 import { useNavigation } from '@react-navigation/native';
 import ProfileModal from '../../components/ProfileModal/ProfileModal';
+import SignInModal from '../../components/SignInModal/SignInModal';
 
 const HomeScreen = ({ name, bookItems, userId, dispatch, isSignedIn, phNo }) => {
 
 	//Variables
 
 	//States
+	const [isSignInModalVisible, setIsSignInModalVisible] = React.useState(false);
 
 	//Refs
 
@@ -42,6 +44,7 @@ const HomeScreen = ({ name, bookItems, userId, dispatch, isSignedIn, phNo }) => 
 
 
 	const toggleVisibleModal = () => setVisibleModal(!visibleModal);
+	const toggleIsSignInModalVisibility = React.useCallback(() => setIsSignInModalVisible(!isSignInModalVisible));
 
 	const getBookList = async () => {
 		setLoader(true)
@@ -123,7 +126,7 @@ const HomeScreen = ({ name, bookItems, userId, dispatch, isSignedIn, phNo }) => 
 
 							toggleVisibleModal()
 						} else {
-
+							toggleIsSignInModalVisibility()
 						}
 					}
 				} />
@@ -224,6 +227,10 @@ const HomeScreen = ({ name, bookItems, userId, dispatch, isSignedIn, phNo }) => 
 
 			</View>
 			<ProfileModal visible={visibleModal} toggleModal={toggleVisibleModal} />
+			<SignInModal
+				toggleIsSignInModalVisibility={toggleIsSignInModalVisibility}
+				isSignInModalVisible={isSignInModalVisible}
+			/>
 		</View>
 	)
 };

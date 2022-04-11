@@ -11,6 +11,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { globalStyles } from '../../global/globalStyles';
 import * as UserAction from '../../redux/actions/userActions'
 import { connect } from 'react-redux';
+import TouchableResize from '../util/TouchableResize';
 
 const ProfileModal = ({ visible, toggleModal, userName, phNo, dispatch }) => {
 
@@ -32,9 +33,9 @@ const ProfileModal = ({ visible, toggleModal, userName, phNo, dispatch }) => {
     });
 
 
-    const goToHome = () =>  navigation.dispatch(resetStackAndGoHome);
-    const goToBook = () => navigation.dispatch(resetStackAndGoProfile);
-    const goToProfile = () => navigation.dispatch(resetStackAndGoBook);
+    const goToHome = () => navigation.navigate(ScreenNames.HOME);
+    const goToBook = () => navigation.navigate(ScreenNames.BOOK_LIST);
+    const goToProfile = () => navigation.navigate(ScreenNames.PROFILE);
     const goToHelp = () => Linking.openURL('mailto:libroit2022@gmail.com?subject=Libro IT HelpDesk')
 
 
@@ -67,7 +68,10 @@ const ProfileModal = ({ visible, toggleModal, userName, phNo, dispatch }) => {
                     </View>
 
 
-                    <TouchableOpacity onPress={goToHome} style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20, marginVertical: 10, }}>
+                    <TouchableOpacity onPress={() => {
+                        toggleModal()
+                        goToHome()
+                    }} style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20, marginVertical: 10, }}>
 
                         <HomeFilledSvg />
                         <Text numberOfLines={1} style={{ fontFamily: Fonts.BOLD, fontSize: Fonts.SIZE_20, color: Colors.BLACK }}>
@@ -75,7 +79,10 @@ const ProfileModal = ({ visible, toggleModal, userName, phNo, dispatch }) => {
                         </Text>
 
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={goToBook} style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20, marginVertical: 10, }}>
+                    <TouchableOpacity onPress={() => {
+                        toggleModal()
+                        goToBook()
+                    }} style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20, marginVertical: 10, }}>
 
                         <MenuFilledSvg />
                         <Text numberOfLines={1} style={{ fontFamily: Fonts.BOLD, fontSize: Fonts.SIZE_20, color: Colors.BLACK }}>
@@ -83,7 +90,10 @@ const ProfileModal = ({ visible, toggleModal, userName, phNo, dispatch }) => {
                         </Text>
 
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={goToProfile} style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20, marginVertical: 10, }}>
+                    <TouchableOpacity onPress={() => {
+                        toggleModal()
+                        goToProfile()
+                    }} style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20, marginVertical: 10, }}>
 
                         <ProfileFilledSvg />
                         <Text numberOfLines={1} style={{ fontFamily: Fonts.BOLD, fontSize: Fonts.SIZE_20, color: Colors.BLACK }}>
@@ -100,11 +110,11 @@ const ProfileModal = ({ visible, toggleModal, userName, phNo, dispatch }) => {
 
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{ ...globalStyles.button, borderWidth: 2, borderRadius: 30, marginVertical: 10, }} onPress={Logout}>
+                    <TouchableResize style={{ ...globalStyles.button, borderWidth: 2, borderRadius: 30, marginVertical: 10, }} onPress={Logout}>
                         {Loader ? <ActivityIndicator color={Colors.BLACK} /> : <Text style={{ ...globalStyles.buttonText }}>
                             Logout
                         </Text>}
-                    </TouchableOpacity>
+                    </TouchableResize>
 
 
                 </View>

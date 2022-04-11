@@ -2,7 +2,6 @@ import React from 'react';
 import {
     Text,
     View,
-    TouchableOpacity,
 } from 'react-native';
 
 //my imports
@@ -11,6 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import MenuSvg from '../../assets/svg/header/menu';
 import BagSvg from '../../assets/svg/header/bag';
 import { Colors, Constants } from '../../global/index';
+import TouchableResize from '../util/TouchableResize';
 
 // import Back from '../../assets/svg/Back';
 
@@ -33,7 +33,7 @@ const Header = ({
             {/* header left */}
             <View style={styles.headerLeftContainer}>
 
-                <TouchableOpacity
+                <TouchableResize
 
                     onPress={rightIconPress}
                     style={[styles.headerLeft, { backgroundColor: Colors.TERTIARY }]}>
@@ -52,7 +52,7 @@ const Header = ({
 
 
 
-                </TouchableOpacity>
+                </TouchableResize>
 
             </View>
 
@@ -72,18 +72,18 @@ const Header = ({
 
                 {activateRightIcon ?
                     <>
-                        <TouchableOpacity
+                        <TouchableResize
                             onPress={midIconPress}
                             style={styles.headerRight}>
                             <BagSvg />
-                        </TouchableOpacity>
-                        <TouchableOpacity
+                        </TouchableResize>
+                        <TouchableResize
                             style={[styles.headerLeft, { backgroundColor: Colors.WHITE, }]}>
                             <Text style={[styles.headerText, { textAlign: 'center', paddingBottom: 2 }]}>
                                 {title}
                             </Text>
 
-                        </TouchableOpacity>
+                        </TouchableResize>
                     </> : <Text style={[styles.headerText, { fontSize: 30 }]}>
                         LibroIT
                     </Text>

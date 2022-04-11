@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Alert, Animated, PermissionsAndroid, StyleSheet } from 'react-native';
+import React, {  } from 'react';
+import { Animated, StyleSheet } from 'react-native';
 // import AsyncStorage from '@react-native-community/async-storage';
 import { Text, View } from 'react-native';
 import { connect } from 'react-redux';
-import auth from '@react-native-firebase/auth';
-import { Colors, Constants, Fonts, ScreenNames, Server } from '../global';
+import { Colors, Constants, ScreenNames } from '../global';
 import { CommonActions } from '@react-navigation/native';
-import Svg, { Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-community/async-storage';
 import * as UserAction from '../redux/actions/userActions'
-import database from '@react-native-firebase/database'
 import firestore from '@react-native-firebase/firestore';
 
 const SplashScreen = ({

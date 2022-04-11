@@ -36,8 +36,6 @@ const UserItem = ({ userId, userName, myUserId, navigation, item, getChatUsers, 
     }
 
     React.useEffect(() => {
-
-
         getMassageCount();
     }, []);
     return (

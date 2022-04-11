@@ -51,7 +51,8 @@ function BottomTabs() {
 									marginLeft: 10,
 									fontSize: Fonts.SIZE_18,
 									fontFamily: Fonts.BOLD,
-									color: Colors.BLACK
+									color: Colors.BLACK,
+									paddingBottom: 2,
 								}}>
 									Explore
 								</Text>
@@ -74,7 +75,9 @@ function BottomTabs() {
 									marginLeft: 10,
 									fontSize: Fonts.SIZE_18,
 									fontFamily: Fonts.BOLD,
-									color: Colors.BLACK
+									color: Colors.BLACK,
+									paddingBottom: 2,
+
 								}}>
 									Books
 								</Text>
@@ -108,7 +111,9 @@ function BottomTabs() {
 									marginLeft: 10,
 									fontSize: Fonts.SIZE_18,
 									fontFamily: Fonts.BOLD,
-									color: Colors.BLACK
+									color: Colors.BLACK,
+									paddingBottom: 2,
+
 								}}>
 									Profile
 								</Text>

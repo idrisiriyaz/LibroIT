@@ -11,6 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import MenuSvg from '../../assets/svg/header/menu';
 import BackSpaceSvg from '../../assets/svg/header/backspace';
 import { Colors, Constants } from '../../global/index';
+import TouchableResize from '../util/TouchableResize';
 
 // import Back from '../../assets/svg/Back';
 
@@ -26,7 +27,7 @@ const Header = ({ activateLeftIcon = true, activateRightIcon, rightIcon, rightIc
 			{/* header left */}
 			<View style={styles.headerLeftContainer}>
 
-				<TouchableOpacity
+				<TouchableResize
 
 					onPress={goBack}
 					style={activateLeftIcon ? styles.headerLeft :
@@ -39,7 +40,7 @@ const Header = ({ activateLeftIcon = true, activateRightIcon, rightIcon, rightIc
 						null
 					}
 
-				</TouchableOpacity>
+				</TouchableResize>
 
 			</View>
 
@@ -57,7 +58,7 @@ const Header = ({ activateLeftIcon = true, activateRightIcon, rightIcon, rightIc
 			{/* header right */}
 			<View style={styles.headerRightContainer}>
 
-				<TouchableOpacity
+				<TouchableResize
 					onPress={rightIconPress}
 					style={styles.headerRight}>
 
@@ -65,7 +66,7 @@ const Header = ({ activateLeftIcon = true, activateRightIcon, rightIcon, rightIc
 						<MenuSvg /> : null}
 
 
-				</TouchableOpacity>
+				</TouchableResize>
 
 
 			</View>
