@@ -166,7 +166,7 @@ const SplashScreen = ({
 								const user = documentSnapshot.data()
 								dispatch(UserAction.setUserId(user.phoneNumber));
 								dispatch(UserAction.setName(user.userName));
-								dispatch(UserAction.setPhone(user.phoneNumber));
+								dispatch(UserAction.setPhone(user.phoneNumber.toString()));
 								dispatch(UserAction.setSignedIn(true));
 								navigation.dispatch(resetStackAndGoToHome)
 							}

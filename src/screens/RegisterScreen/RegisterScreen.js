@@ -81,7 +81,7 @@ const RegisterScreen = ({ navigation }) => {
 
 			if (isUserAvail === 1) {
 
-				Alert.alert("Alert!", 'Already UserName');
+				Alert.alert("Alert!", 'Already use this UserName');
 
 			} else {
 
@@ -99,7 +99,7 @@ const RegisterScreen = ({ navigation }) => {
 								if (documentSnapshot.exists) {
 									console.log('User data: ', documentSnapshot.data());
 
-									Alert.alert("Alert!", 'Already Number')
+									Alert.alert("Alert!", 'Already use this Number')
 								} else {
 
 

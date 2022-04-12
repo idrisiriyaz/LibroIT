@@ -77,7 +77,7 @@ const ContactListScreen = ({ navigation, phNo }) => {
                         if (users) {
 
 
-                            const intersection = users.filter(element => userPhoneNumberByContact.includes(element?.phoneNumber));
+                            const intersection = users.filter(element => userPhoneNumberByContact.includes(element?.phoneNumber.toString()));
                             setContactUsers(intersection);
 
                         }

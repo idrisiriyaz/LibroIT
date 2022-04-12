@@ -40,7 +40,14 @@ const LoginScreen = ({ navigation }) => {
 						console.log('User data: ', documentSnapshot.data());
 						navigation.navigate(ScreenNames.OTP, { number: number })
 					} else {
-						navigation.navigate(ScreenNames.REGISTER)
+						Alert.alert('Alert!', "Invalid User Please Register",
+							[
+								{
+									text: "Cancel",
+									style: "cancel"
+								},
+								{ text: "Register", onPress: () => { navigation.navigate(ScreenNames.REGISTER) } }
+							])
 					}
 				});
 

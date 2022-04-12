@@ -49,7 +49,7 @@ const RegisterOTPScreen = ({ navigation, route: { params: { phoneNumber, userNam
 			}).then(() => {
 				dispatch(UserAction.setUserId(phoneNumber));
 				dispatch(UserAction.setName(userName));
-				dispatch(UserAction.setPhone(phoneNumber));
+				dispatch(UserAction.setPhone(phoneNumber.toString()));
 				dispatch(UserAction.setSignedIn(true));
 				AsyncStorage.setItem('phoneNumber', phoneNumber.toString());
 				navigation.replace(ScreenNames.BOTTOM_TABS)

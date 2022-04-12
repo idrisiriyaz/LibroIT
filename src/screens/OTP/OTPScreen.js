@@ -96,7 +96,7 @@ const OTPScreen = ({ navigation, route: { params: { number } }, params, dispatch
 					const user = documentSnapshot.data()
 					dispatch(UserAction.setUserId(user.phoneNumber));
 					dispatch(UserAction.setName(user.userName));
-					dispatch(UserAction.setPhone(user.phoneNumber));
+					dispatch(UserAction.setPhone(user.phoneNumber.toString()));
 					dispatch(UserAction.setSignedIn(true));
 					AsyncStorage.setItem('phoneNumber', number.toString());
 					navigation.replace(ScreenNames.BOTTOM_TABS)

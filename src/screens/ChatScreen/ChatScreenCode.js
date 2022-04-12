@@ -508,10 +508,10 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 				modalVisible={modalVisible}
 				setModalVisible={setModalVisible}>
 
-				<TouchableResize style={{ margin: 6 }}
+				{blockOtherUser ? null : <TouchableResize style={{ margin: 6 }}
 					onPress={clearChat} >
 					<Text style={{ fontFamily: Fonts.BOLD, color: Colors.ALERT, paddingBottom: 2, }} >Delete Chat</Text>
-				</TouchableResize>
+				</TouchableResize>}
 				<TouchableResize style={{ margin: 6 }}
 					onPress={() => {
 						if (blockUser) {

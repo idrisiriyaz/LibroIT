@@ -19,6 +19,8 @@ import ProfileScreen from '../screens/Profile/ProfileScreen';
 import ContactListScreen from '../screens/ContactList/ContactListScreen';
 import LoginScreen from '../screens/Login/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen/RegisterScreen';
+import RegisterOTPScreen from '../screens/RegisterOTP/RegisterOTPScreen';
+import OTPScreen from '../screens/OTP/OTPScreen';
 
 enableScreens();
 const stack = createNativeStackNavigator();
@@ -297,6 +299,8 @@ const MainStack = ({ myUserId, dispatch, navigation, country }) => {
 				<stack.Screen name={ScreenNames.CONTACT} component={ContactListScreen} />
 				<stack.Screen name={ScreenNames.LOGIN} component={LoginScreen} />
 				<stack.Screen name={ScreenNames.REGISTER} component={RegisterScreen} />
+				<stack.Screen name={ScreenNames.REGISTER_OTP} component={RegisterOTPScreen} />
+				<stack.Screen name={ScreenNames.OTP} component={OTPScreen} />
 				{/* <stack.Screen name={ScreenNames.BRAND_MAIN_STACK} component={BrandMainStack} />
 			<stack.Screen name={ScreenNames.YOUADME} component={BrandYouadmiScreen} />
 			<stack.Screen name="StartScreen" component={StartScreen} />
