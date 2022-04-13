@@ -12,23 +12,9 @@ export const setName = payload => ({
 	payload,
 });
 
-export const setEmail = payload => ({
-	type: actionTypes.SET_EMAIL,
-	payload,
-});
 
 export const setPhone = payload => ({
 	type: actionTypes.SET_PHONE_NUMBER,
-	payload,
-});
-
-export const setDob = payload => ({
-	type: actionTypes.SET_DOB,
-	payload,
-});
-
-export const setAnniversaryDate = payload => ({
-	type: actionTypes.SET_ANNIVERSARY_DATE,
 	payload,
 });
 

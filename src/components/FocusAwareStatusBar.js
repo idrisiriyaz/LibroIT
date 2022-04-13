@@ -1,9 +1,14 @@
 import * as React from 'react';
 import { StatusBar, Platform, View } from 'react-native';
+
+
+//npm
 import { useIsFocused } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const FocusAwareStatusBar = ({ isLightBar, isTopSpace, isTransparent }) => {
+
+	//variable
 	const insets = useSafeAreaInsets();
 	const isFocused = useIsFocused();
 	const isAndroid = Platform.OS === 'android';

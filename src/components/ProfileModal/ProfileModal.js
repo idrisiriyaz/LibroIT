@@ -1,44 +1,44 @@
-import { CommonActions, useNavigation } from '@react-navigation/native'
 import React from 'react'
 import { Modal, StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Linking } from 'react-native'
+
+//npm
+import { CommonActions, useNavigation } from '@react-navigation/native'
+import AsyncStorage from '@react-native-community/async-storage';
+import { connect } from 'react-redux';
+
+//global
 import { Colors, Fonts, ScreenNames } from '../../global'
-// import CrossSvg from "../../assets/svg/modalCross.svg"
+import { globalStyles } from '../../global/globalStyles';
+
+//svg
 import MenuFilledSvg from '../../assets/svg/menu/book-bookmark';
 import HomeFilledSvg from '../../assets/svg/menu/server-fill';
 import ProfileFilledSvg from '../../assets/svg/menu/profile_icon_filled';
 import HelpSvg from '../../assets/svg/help';
-import AsyncStorage from '@react-native-community/async-storage';
-import { globalStyles } from '../../global/globalStyles';
+
+//redux
 import * as UserAction from '../../redux/actions/userActions'
-import { connect } from 'react-redux';
+
+//component
 import TouchableResize from '../util/TouchableResize';
 
 const ProfileModal = ({ visible, toggleModal, userName, phNo, dispatch }) => {
 
+    //state
     const [Loader, setLoader] = React.useState(false);
 
+    //variable
     const navigation = useNavigation();
-
     const resetStackAndGoHome = CommonActions.reset({
         index: 0,
         routes: [{ name: ScreenNames.BOTTOM_TABS, params: { screen: ScreenNames.HOME } }],
     });
-    const resetStackAndGoProfile = CommonActions.reset({
-        index: 2,
-        routes: [{ name: ScreenNames.BOTTOM_TABS, params: { screen: ScreenNames.PROFILE } }],
-    });
-    const resetStackAndGoBook = CommonActions.reset({
-        index: 1,
-        routes: [{ name: ScreenNames.BOTTOM_TABS, params: { screen: ScreenNames.BOOK_LIST } }],
-    });
 
-
+    //function
     const goToHome = () => navigation.navigate(ScreenNames.HOME);
     const goToBook = () => navigation.navigate(ScreenNames.BOOK_LIST);
     const goToProfile = () => navigation.navigate(ScreenNames.PROFILE);
     const goToHelp = () => Linking.openURL('mailto:libroit2022@gmail.com?subject=Libro IT HelpDesk')
-
-
 
     const Logout = async () => {
         setLoader(true)
@@ -47,6 +47,8 @@ const ProfileModal = ({ visible, toggleModal, userName, phNo, dispatch }) => {
         dispatch(UserAction.clearSession())
         setLoader(false)
     }
+
+
     return (
         <Modal
             animationType={"fade"}
@@ -115,13 +117,8 @@ const ProfileModal = ({ visible, toggleModal, userName, phNo, dispatch }) => {
                             Logout
                         </Text>}
                     </TouchableResize>
-
-
                 </View>
             </View>
-
-
-
         </Modal >
     )
 }
@@ -130,7 +127,6 @@ const ProfileModal = ({ visible, toggleModal, userName, phNo, dispatch }) => {
 const mapStateToProps = state => ({
     phNo: state.user.phNo,
     userName: state.user.name,
-    bookItems: state.bookmark.bookItems,
 });
 
 const mapDispatchToProps = dispatch => ({ dispatch });

@@ -1,14 +1,16 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
+
+//global
 import { Colors, Constants, Fonts, ScreenNames } from '../../global'
 
-const UserItem = ({ userId, userName, myUserId, navigation, item, getChatUsers, messages }) => {
+const UserItem = ({ userId, userName, myUserId, navigation, messages }) => {
 
+    //state
     const [Messages, setMessages] = React.useState([]);
     const [unSeenCount, setUnSeenCount] = React.useState(0);
-    const [Loader, setLoader] = React.useState(false);
-    const [profileImage, setProfileImage] = React.useState(null)
 
+    //function
     const goChatLobby = () => navigation?.navigate(ScreenNames.CHAT, { userId: userId, userName: userName })
 
     const getMassageCount = () => {
@@ -41,13 +43,10 @@ const UserItem = ({ userId, userName, myUserId, navigation, item, getChatUsers, 
     return (
         <TouchableOpacity onPress={
             () => {
-                // addChatLobby()
                 goChatLobby()
             }
         } >
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 60 }}>
-
-
                 <View style={{ justifyContent: 'center', flexDirection: 'row' }}>
                     <View style={{ height: 40, width: 40, borderRadius: 40, borderWidth: 2, backgroundColor: Colors.TERTIARY, justifyContent: 'center', alignItems: 'center', }}>
                         <Text style={{ fontFamily: Fonts.BOLD, alignItems: 'center', fontSize: Fonts.SIZE_16, paddingBottom: 2, }} >{userName.charAt(0)}</Text>
@@ -59,8 +58,6 @@ const UserItem = ({ userId, userName, myUserId, navigation, item, getChatUsers, 
 
                     </View>
                 </View>
-
-
                 <View style={{ justifyContent: 'center' }}>
                     {
                         Messages ?
@@ -74,7 +71,6 @@ const UserItem = ({ userId, userName, myUserId, navigation, item, getChatUsers, 
                         unSeenCount ?
                             <View style={{
                                 backgroundColor: Colors.SECONDARY, paddingHorizontal: 4, height: 20,
-                                // width: unSeenCount > 99 ? null : 20,
                                 borderWidth: 1,
                                 width: 20,
                                 justifyContent: 'center', alignItems: 'center', borderRadius: 20,
@@ -83,12 +79,8 @@ const UserItem = ({ userId, userName, myUserId, navigation, item, getChatUsers, 
                             </View>
                             : null
                     }
-
-
                 </View>
-
             </View>
-
         </TouchableOpacity>
     )
 }

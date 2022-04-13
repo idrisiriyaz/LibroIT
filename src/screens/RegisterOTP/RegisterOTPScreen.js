@@ -1,42 +1,43 @@
-import OTPInputView from '@twotalltotems/react-native-otp-input';
 import React, { useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, Alert, TextInput, ActivityIndicator, TouchableOpacity, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, Alert, ActivityIndicator, TouchableOpacity, View } from 'react-native';
+
+//component
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar';
+
+//style
 import { Colors, Fonts, ScreenNames } from '../../global';
+
+//npm
+import OTPInputView from '@twotalltotems/react-native-otp-input';
+import AsyncStorage from '@react-native-community/async-storage';
+import firestore from '@react-native-firebase/firestore';
 import OTPTextInput from 'react-native-otp-textinput';
+import auth from '@react-native-firebase/auth';
+import { connect } from 'react-redux';
+
+//global
 import { globalStyles } from '../../global/globalStyles';
 import { styles } from './RegisterOTPStyles'
-import { connect } from 'react-redux';
-import * as UserAction from '../../redux/actions/userActions'
-import AsyncStorage from '@react-native-community/async-storage';
-import database from '@react-native-firebase/database'
-import auth from '@react-native-firebase/auth';
-// import { ALERT } from '../../global/colors';
-import firestore from '@react-native-firebase/firestore';
+
+//redux
+import * as UserAction from '../../redux/actions/userActions';
 
 const RegisterOTPScreen = ({ navigation, route: { params: { phoneNumber, userName } }, params, dispatch }, props) => {
 
-	//Variables
-	const user = {
-		userId: 1,
-		userName: "Dummy User",
-		// phone: route.params.phone
-	}
-
-	//States
-	const otpInput = React.useRef(null);
+	//state
 	const [code, setCode] = React.useState('023405');
 	const [minutes, setMinutes] = React.useState(1);
 	const [timerValue, setTimerValue] = React.useState(30);
 	const [resend, setResend] = React.useState(false);
 	const [Loader, setLoader] = React.useState(false)
+	const [confirm, setConfirm] = useState(null);
 
 	//useRef
+	const otpInput = React.useRef(null);
 	const timerRef = React.useRef();
 
-
+	//function
 	const register = async (phone) => {
-
 
 		let phoneNumber = parseInt(phone)
 		setLoader(true)
@@ -44,7 +45,7 @@ const RegisterOTPScreen = ({ navigation, route: { params: { phoneNumber, userNam
 			.collection('users').doc(`${phoneNumber}`).set({
 				userId: phoneNumber,
 				userName: userName,
-				phoneNumber: phoneNumber,
+				phoneNumber: phoneNumber.toString(),
 				blockUsers: []
 			}).then(() => {
 				dispatch(UserAction.setUserId(phoneNumber));
@@ -57,41 +58,22 @@ const RegisterOTPScreen = ({ navigation, route: { params: { phoneNumber, userNam
 		setLoader(false)
 	}
 
-
-	const [confirm, setConfirm] = useState(null);
-
-	// const [code, setCode] = useState('');
-
-	// Handle the button press
-	async function signInWithPhoneNumber(phoneNumber) {
+	const signInWithPhoneNumber = async (phoneNumber) => {
 		const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
 		setConfirm(confirmation);
 	}
 
-	async function confirmCode() {
+	const confirmCode = async () => {
 		setLoader(false)
-
 		try {
 			await confirm.confirm(code);
 			register(phoneNumber);
 		} catch (error) {
-
 			Alert.alert('Alert!', 'Invalid code.')
-			// console.log('Invalid code.');
 		}
 		setLoader(false)
-
 	}
 
-	// if (!confirm) {
-	// 	return (
-	// 		<Button
-	// 			title="Phone Number Sign In"
-	// 			onPress={() => signInWithPhoneNumber('+911234567890')}
-	// 		/>
-	// 	);
-	// }
-	//Functions
 	const startTimer = () => {
 		timerRef.current = setInterval(() => {
 			setTimerValue(prevTimerValue => prevTimerValue - 1);
@@ -108,7 +90,6 @@ const RegisterOTPScreen = ({ navigation, route: { params: { phoneNumber, userNam
 			clearInterval(timerRef.current);
 		};
 	}
-
 
 
 	//UseEffect
@@ -212,32 +193,12 @@ const RegisterOTPScreen = ({ navigation, route: { params: { phoneNumber, userNam
 						}
 
 					</TouchableOpacity>
-					{/* <View style={{ flexDirection: "row", justifyContent: "center", marginBottom: 20 }}>
-					<Text style={{ color: "#16161680" }}>
-						Don’t have a account?
-					</Text>
-					<TouchableOpacity style={{ paddingLeft: 5 }}>
-						<Text style={{ color: "#161616" }}>
-							Sign up
-						</Text>
-					</TouchableOpacity>
-				</View> */}
 				</View>
 			</ScrollView>
 
 		</KeyboardAvoidingView >
 	)
 };
-// const mapStateToProps = (state) => {
-// 	return {
-// 		contactId: state.brand.contactId,
-// 		country: state.brand.country,
-// 		brandId: state.brand.brandId,
-// 		brandInterest: state.brand.brandInterest,
-// 		currentUserType: state.user.currentUserType,
-
-// 	};
-// };
 
 const mapDispatchToProps = (dispatch) => ({ dispatch, });
 

@@ -1,50 +1,46 @@
-import moment from 'moment';
 import React from 'react'
-import { Linking, StyleSheet, Text, View, Image, Animated, TouchableOpacity } from 'react-native'
+import { Linking, Text, View, Animated, TouchableOpacity } from 'react-native'
+
+//npm
+import GestureRecognizer from 'react-native-swipe-gestures';
+import Clipboard from '@react-native-community/clipboard';
+import database from '@react-native-firebase/database'
 import HyperLink from 'react-native-hyperlink';
-import { Colors, Constants, Fonts } from '../../global';
-import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 import { connect } from 'react-redux';
+import moment from 'moment';
+
+//global
+import { Colors, Constants, Fonts } from '../../global';
+
+//redux
 import * as UserActions from '../../redux/actions/userActions';
+
+//svg
 import DoubleTick from '../../assets/svg/DoubleTick.svg';
 import BlueTick from '../../assets/svg/BlueTick.svg'
-import database from '@react-native-firebase/database'
-import ModalMenu from '../util/ModalMenu';
+
+//compoment
 import TouchableResize from '../util/TouchableResize';
-import Clipboard from '@react-native-community/clipboard';
 
 
 const MessageItem = ({ item, myUserId, details, otherDetails, userId, message, flatlistRef, setCustomToast, setReplaydata, highlightMessageId, dispatch }) => {
 
+    //variable
+    const config = {
+        velocityThreshold: 0.3,
+        directionalOffsetThreshold: 80
+    };
+    let right = React.useRef(new Animated.Value(0)).current;
+    let opacity = React.useRef(new Animated.Value(0)).current;
+
+
+    //state
     const [textShown, setTextShown] = React.useState(false); //To show ur remaining Text
     const [lengthMore, setLengthMore] = React.useState(0); //to show the "Read more & Less Line"
-    const [imageHeightWidth, setImageHeightWidth] = React.useState(null)
-    const [urlPreview, setUrlPreview] = React.useState(null)
     const [modalVisible, setModalVisible] = React.useState(false);
 
+    //function
     const toggleChat = () => setModalVisible(!modalVisible)
-
-    // function test(url) {
-    //     var mat = url.match(/(https?:\/\/[^ ]*)/)
-    //     if (mat != null) {
-    //         if (mat.length > 0) {
-    //             setUrlPreview(mat[0])
-    //         }
-    //     }
-
-    // }
-    // console.warn(message);
-
-    const messageOption = () => {
-
-
-
-
-
-
-
-
-    }
 
     const deleteMessage = () => {
         const users = [{
@@ -97,14 +93,6 @@ const MessageItem = ({ item, myUserId, details, otherDetails, userId, message, f
 
 
 
-
-
-    const config = {
-        velocityThreshold: 0.3,
-        directionalOffsetThreshold: 80
-    };
-
-
     const goToReplayMessage = () => {
         if (typeof message != "undefined") {
             const index = message.findIndex(e => e.messageId == item.replyMessageDetails.messageId)
@@ -115,8 +103,6 @@ const MessageItem = ({ item, myUserId, details, otherDetails, userId, message, f
 
         }
     }
-    let right = React.useRef(new Animated.Value(0)).current;
-    let opacity = React.useRef(new Animated.Value(0)).current;
 
     React.useEffect(() => {
         if (highlightMessageId == item.messageId) {
@@ -139,7 +125,7 @@ const MessageItem = ({ item, myUserId, details, otherDetails, userId, message, f
 
     return (
         <GestureRecognizer
-            onSwipeRight={(state) => {
+            onSwipeRight={() => {
 
                 if (!item.isHide) {
 
@@ -222,11 +208,11 @@ const MessageItem = ({ item, myUserId, details, otherDetails, userId, message, f
                         <View>
                             <HyperLink
                                 linkStyle={{ color: Colors.SECONDARY }}
-                                onLongPress={(url, text) => {
+                                onLongPress={(url) => {
                                     Clipboard.setString(url);
                                     setCustomToast(true)
                                 }}
-                                onPress={(url, text) => Linking.openURL(url)}>
+                                onPress={(url) => Linking.openURL(url)}>
                                 <Text numberOfLines={textShown ? undefined : 6} onTextLayout={onTextLayout} style={{ fontSize: 15, fontStyle: item.isHide ? 'italic' : 'normal', marginHorizontal: 4, color: Colors.BLACK, paddingBottom: 2, fontFamily: Fonts.BOLD, maxWidth: Constants.SCREEN_WIDTH / 1.6 }}>
                                     {item.isHide ? "You deleted this message" : item.message}
                                 </Text>
@@ -281,4 +267,4 @@ let mapDispatchToProps = dispatch => ({ dispatch });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MessageItem)
 
-const styles = StyleSheet.create({})
+

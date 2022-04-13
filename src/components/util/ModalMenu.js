@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, Modal, TouchableOpacity, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Modal, TouchableOpacity, StyleSheet } from 'react-native';
 
 const ModalMenu = ({ children, modalVisible, setModalVisible }) => {
 

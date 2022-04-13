@@ -1,19 +1,29 @@
 import React, { useState } from 'react';
-import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { FlatList, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+
+//npm
+import firestore from '@react-native-firebase/firestore';
 import database from '@react-native-firebase/database'
 import moment from 'moment';
 import { connect } from 'react-redux';
+
+//global
 import { Colors, Constants, Fonts } from '../../global';
+
+//component
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar';
-import Header from '../../components/Header/Header';
-import { useNavigation } from '@react-navigation/native';
-import MessageItem from '../../components/MessageItem/MessageItem';
-import SendSvg from '../../assets/svg/send';
-import CrossSvg from "../../assets/svg/cross"
-import firestore from '@react-native-firebase/firestore';
-import ModalMenu from '../../components/util/ModalMenu';
 import TouchableResize from '../../components/util/TouchableResize';
 import CustomToast from '../../components/CustomToast/CustomToast';
+import MessageItem from '../../components/MessageItem/MessageItem';
+import ModalMenu from '../../components/util/ModalMenu';
+import Header from '../../components/Header/Header';
+
+//svg
+import SendSvg from '../../assets/svg/send';
+import CrossSvg from "../../assets/svg/cross";
+
+//style
+import { styles } from './ChatStyle';
 
 
 
@@ -24,8 +34,6 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 
 	//state
 	const [modalVisible, setModalVisible] = useState(false);
-	const [isVisibleAttachmentModal, setVisibilityAttachmentModal] = React.useState(false);
-	const [index, setIndex] = React.useState(0);
 	const [customToast, setCustomToast] = React.useState(false)
 	const [Messages, setMessages] = React.useState([]);
 	const [isLoading, setIsLoading] = React.useState(false)
@@ -36,15 +44,10 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 	const [isOnline, setIsOnline] = React.useState(false);
 	const [replaydata, setReplaydata] = React.useState(null)
 	const [blockUser, setBlockUser] = React.useState(false);
-	const [loader, setLoader] = React.useState(false);
-	const [isAskTypeModalVisible, setAskTypeModalVisible] = React.useState(false);;
 	const [blockOtherUser, setOtherBlockUser] = React.useState(false);
 
 	//toggle
 	const toggleClearChat = () => setModalVisible(!modalVisible)
-
-	//navigate
-	const navigation = useNavigation()
 
 	//function
 	const clearChat = () => {
@@ -309,23 +312,7 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 
 	}
 
-
-
-	const _renderItem = ({ item }) => <MessageItem otherDetails={otherDetails} details={details} userName={item.senderName} item={item} myUserId={myUserId} userId={userId} message={Messages} flatlistRef={flatlistRef} setReplaydata={setReplaydata} setCustomToast={setCustomToast} />
-
-	React.useEffect(() => {
-		getDetails();
-		getOtherDetails();
-		getMessages();
-		checkOtherBlock();
-		checkBlock();
-		isOnlineUser()
-		return () => isOfflineUser();
-
-	}, [])
-
-	React.useEffect(() => {
-
+	const seenMessage = () => {
 
 		setTimeout(() => {
 
@@ -338,8 +325,6 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 					}
 				}
 				)
-
-				// console.warn(unSeenCount);
 
 				if (unSeenCount.filter(e => e == false).length > 0) {
 
@@ -373,24 +358,37 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 			}
 
 		}, 2000)
+	}
 
 
+	const _renderItem = ({ item }) => <MessageItem otherDetails={otherDetails} details={details} userName={item.senderName} item={item} myUserId={myUserId} userId={userId} message={Messages} flatlistRef={flatlistRef} setReplaydata={setReplaydata} setCustomToast={setCustomToast} />
+
+	React.useEffect(() => {
+		getDetails();
+		getOtherDetails();
+		getMessages();
+		checkOtherBlock();
+		checkBlock();
+		isOnlineUser();
+
+		return () => isOfflineUser();
+
+	}, [])
+
+	React.useEffect(() => {
+		seenMessage()
 	}, [Messages])
 
 
 
 	return (
 		<KeyboardAvoidingView
-			behavior={Platform.OS === 'ios' ? "padding" : null} style={{ backgroundColor: Colors.WHITE, flex: 1 }}>
+			behavior={Platform.OS === 'ios' ? "padding" : null} style={styles.conatainer}>
 			<FocusAwareStatusBar isLightBar={false} isTopSpace={true} />
-
 			<Header title={userName} activateRightIcon={true} rightIconPress={toggleClearChat} />
-			{/* <ModalMenu /> */}
-
 			{isLoading ? <ActivityIndicator size={'large'} color={Colors.PRIMARY} /> : blockOtherUser || blockUser ?
-				<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+				<View style={styles.blockCon}>
 					{blockUser ?
-
 						<View>
 							<Text style={[styles.acceptText, { alignSelf: "center" }]} >You have blocked {userName}</Text>
 							<Text style={[styles.acceptText, { alignSelf: "center" }]} >You can't chat with {userName}</Text>
@@ -404,10 +402,10 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 				</View>
 				:
 				<>
-					<View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.MUNSELL, }} >
+					<View style={styles.chatCon} >
 						<Text style={{ fontSize: 12, paddingBottom: 2, fontFamily: Fonts.BOLD, color: isOnline ? Colors.SECONDARY : Colors.ALERT }} >{isOnline ? "Online" : "Offline"}</Text>
 					</View>
-					<View style={{ flex: 1, justifyContent: "center", backgroundColor: Colors.WHITE, paddingTop: 20 }}>
+					<View style={styles.messageCon}>
 						{
 							Messages
 							&&
@@ -422,7 +420,6 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 							/>
 						}
 					</View>
-
 
 					{
 						replaydata &&
@@ -441,7 +438,7 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 								onPress={() => {
 									setReplaydata(null)
 								}}
-								style={{ position: "absolute", zIndex: 100, right: 16, top: 16, height: 20, width: 20, backgroundColor: Colors.WHITE + 50, borderRadius: 10, alignItems: "center", justifyContent: "center" }}>
+								style={styles.cross}>
 								<CrossSvg />
 							</TouchableOpacity>
 
@@ -460,13 +457,13 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 										color: Colors.BLACK, fontFamily: Fonts.BOLD
 									}}>{replaydata.senderId == myUserId ? "You" : replaydata.senderName}</Text>
 									<View style={{ flexDirection: 'row' }}>
-										<Text numberOfLines={2} style={{ color: Colors.GRAY_DARK, fontFamily: Fonts.MEDIUM, maxWidth: Constants.SCREEN_WIDTH / 1.4 }} >{replaydata?.message}</Text>
+										<Text numberOfLines={2} style={styles.replyMessage} >{replaydata?.message}</Text>
 									</View>
 								</View>
 							</View>
 						</View>
 					}
-					<View style={{ alignItems: "center", justifyContent: 'space-between', flexDirection: "row", backgroundColor: Colors.WHITE, marginHorizontal: 20, marginBottom: 20, }}>
+					<View style={styles.replyCon} >
 
 						<View style={{
 							height: 60, borderTopRightRadius: replaydata ? 0 : 16,
@@ -493,7 +490,7 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 						{
 							userMessage ?
 								<TouchableOpacity style={{ marginLeft: 10, }} onPress={sendMessage}>
-									<View style={{ height: 50, width: 50, borderWidth: 2, borderRadius: 40, backgroundColor: Colors.TERTIARY, justifyContent: 'center', alignItems: 'center' }}>
+									<View style={styles.send}>
 
 										<SendSvg />
 
@@ -507,7 +504,6 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 			<ModalMenu
 				modalVisible={modalVisible}
 				setModalVisible={setModalVisible}>
-
 				{blockOtherUser ? null : <TouchableResize style={{ margin: 6 }}
 					onPress={clearChat} >
 					<Text style={{ fontFamily: Fonts.BOLD, color: Colors.ALERT, paddingBottom: 2, }} >Delete Chat</Text>
@@ -523,11 +519,6 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 					{isLoading ? <ActivityIndicator color={Colors.SECONDARY} size='small' /> : <Text style={{ fontFamily: Fonts.BOLD, paddingBottom: 2, }} >{blockUser ? "Unblock" : "Block"} User</Text>}
 				</TouchableResize>
 
-				{/* <TouchableResize onPress={deleteChat} >
-							<Text>Delete Chat</Text>
-						</TouchableResize> */}
-
-
 			</ModalMenu>
 			<CustomToast
 				isToastMsgVisible={customToast}
@@ -535,35 +526,15 @@ const ChatScreen = ({ myUserName, myUserId, route: { params: { userId, userName 
 				setCustomToast={setCustomToast}
 				top={Constants.SCREEN_HEIGHT - 300}
 			/>
-
-			{/* </View> */}
 		</KeyboardAvoidingView >
 	);
 }
-const styles = StyleSheet.create({
-	TextInput: {
-		flex: 1,
-		fontSize: 18,
-		fontFamily: Fonts.MEDIUM,
-		color: Colors.BLACK
-	},
-	acception: {
-		backgroundColor: Colors.PRIMARY,
-		padding: 10,
-		margin: 20,
-		borderRadius: 10,
-		borderWidth: 2,
-		justifyContent: 'center',
-		alignItems: 'center'
-	},
-	acceptText: { color: Colors.BLACK, fontFamily: Fonts.BOLD, padding: 2 }
-})
+
 const mapStateToProps = state => ({
 	phNo: state.user.phNo,
 	myUserId: state.user.userId,
 	myUserName: state.user.name,
 	isSignedIn: state.user.isSignedIn,
-	bookItems: state.bookmark.bookItems,
 });
 
 const mapDispatchToProps = dispatch => ({ dispatch });

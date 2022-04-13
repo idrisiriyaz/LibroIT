@@ -40,34 +40,17 @@ const Header = ({
 
                     <View>
                         <View style={{ flexDirection: 'row' }}>
-                            <View style={{ height: 10, width: 10, borderRadius: 10, backgroundColor: Colors.WHITE, borderWidth: 1 }} />
-                            <View style={{ height: 10, width: 10, borderRadius: 10, backgroundColor: Colors.WHITE, borderWidth: 1 }} />
+                            <View style={styles.dot} />
+                            <View style={styles.dot} />
                         </View>
                         <View style={{ flexDirection: 'row' }}>
-                            <View style={{ height: 10, width: 10, borderRadius: 10, backgroundColor: Colors.WHITE, borderWidth: 1 }} />
-                            <View style={{ height: 10, width: 10, borderRadius: 10, backgroundColor: Colors.WHITE, borderWidth: 1 }} />
+                            <View style={styles.dot} />
+                            <View style={styles.dot} />
 
                         </View>
                     </View>
-
-
-
                 </TouchableResize>
-
             </View>
-
-            {/* header center */}
-            {/* <View style={styles.headerCenterContainer}>
-
-                <View style={styles.headerCenter}>
-                    <Text style={styles.headerText}>
-                        {title}
-                    </Text>
-                </View>
-
-            </View> */}
-
-            {/* header right */}
             <View style={[styles.headerRightContainer, { flexDirection: "row", flex: 0.5 }]}>
 
                 {activateRightIcon ?

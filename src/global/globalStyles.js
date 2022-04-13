@@ -1,6 +1,4 @@
-import {
-	StyleSheet
-} from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Colors, Fonts } from '.';
 
 export const globalStyles = StyleSheet.create({
@@ -20,7 +18,7 @@ export const globalStyles = StyleSheet.create({
 		marginHorizontal: 20,
 		marginBottom: 15,
 		borderWidth: 2,
-		
+
 	},
 	buttonText: {
 		fontFamily: Fonts.BOLD,

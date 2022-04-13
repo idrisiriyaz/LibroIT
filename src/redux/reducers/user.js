@@ -35,25 +35,11 @@ const user = (state = initialState, action) => {
 				...state,
 				name: payload,
 			};
-		case actionTypes.SET_EMAIL:
-			return {
-				...state,
-				email: payload,
-			};
+
 		case actionTypes.SET_PHONE_NUMBER:
 			return {
 				...state,
 				phNo: payload,
-			};
-		case actionTypes.SET_ANNIVERSARY_DATE:
-			return {
-				...state,
-				dob: payload,
-			};
-		case actionTypes.SET_DOB:
-			return {
-				...state,
-				anniversaryDate: payload,
 			};
 		case actionTypes.CLEAR_SESSION:
 			return {

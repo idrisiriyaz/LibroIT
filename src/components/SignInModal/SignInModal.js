@@ -1,15 +1,25 @@
 import React from 'react'
 import { Modal, StyleSheet, Text, View, } from 'react-native'
+
+//global
 import { Colors, Constants, Fonts, ScreenNames } from '../../global'
 import { globalStyles } from '../../global/globalStyles'
+
+//svg
 import CrossSvg from "../../assets/svg/cross"
+
+//npm
 import { useNavigation } from '@react-navigation/native';
+
+//component
 import TouchableResize from '../util/TouchableResize'
 
-const SignInModal = ({ isSignInModalVisible, toggleIsSignInModalVisibility, navigateFrom, navigateTo }) => {
+const SignInModal = ({ isSignInModalVisible, toggleIsSignInModalVisibility }) => {
 
+    //variable
     const navigation = useNavigation();
 
+    //function
     const handleSignInPress = () => {
         navigation.navigate(ScreenNames.LOGIN)
         toggleIsSignInModalVisibility()

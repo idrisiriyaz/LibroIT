@@ -1,35 +1,35 @@
 import { View, Text, TextInput, FlatList, ActivityIndicator } from 'react-native'
 import React from 'react'
+
+//style
 import { styles } from './InboxStyle'
+
+//global
 import { Colors, Constants, Fonts, ScreenNames } from '../../global'
+
+//component
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar'
+import UserItem from '../../components/UserItem/UserItem'
 import Header from '../../components/Header/Header'
+
+//svg
 import SearchSvg from '../../assets/svg/search';
 import MessageSvg from '../../assets/svg/message';
+
+//npm
 import database from '@react-native-firebase/database'
 import { connect } from 'react-redux'
-import UserItem from '../../components/UserItem/UserItem'
 
 
 const InboxScreen = ({ navigation, myUserId, myUserName }) => {
 
-
-
-
+    //state
     const [chatUsers, setChatUsers] = React.useState(null);
-
     const [search, setSearch] = React.useState([])
     const [searchText, setSearchText] = React.useState('')
     const [Loader, setLoader] = React.useState(false);
-    const [requestMsgCount, setRequestMsgCount] = React.useState(0);
-    // const myUserId = 9702586589;
-    const userId = 9702586589;
-    // const myUserName = 9702586589;
-    const userName = "riyaz";
 
-
-
-
+    //function
     const goContact = () => navigation?.navigate(ScreenNames.CONTACT)
 
     const Search = (text) => {
@@ -41,7 +41,6 @@ const InboxScreen = ({ navigation, myUserId, myUserName }) => {
     const getChatUsers = () => {
 
         setLoader(true)
-        // console.warn(myUserId)
         database().ref(`/UserChat/${myUserId}`).on('value', chatUsers => {
             if (!chatUsers.exists()) {
                 setChatUsers([])
@@ -52,12 +51,8 @@ const InboxScreen = ({ navigation, myUserId, myUserName }) => {
 
                 let newArrays = newArr.filter(e => typeof e.Messages != "undefined" && JSON.parse(e.Messages.messages).length > 0)
                 setChatUsers(newArrays);
-
-                // console.log(newArr);
-
             }
         });
-
         setLoader(false)
     }
     const listNoChatUsers = () => {
@@ -66,9 +61,6 @@ const InboxScreen = ({ navigation, myUserId, myUserName }) => {
         </View>)
 
     }
-
-
-
     const _renderItem = ({ item, index }) => <UserItem getChatUsers={getChatUsers} messages={item.Messages} item={item.Details} navigation={navigation} myUserId={item?.Details?.myUserId} userName={item?.Details?.userName} userId={item?.Details?.userId} />
 
     React.useEffect(() => {
@@ -77,22 +69,15 @@ const InboxScreen = ({ navigation, myUserId, myUserName }) => {
 
     return (
         <View style={{ flex: 1, backgroundColor: Colors.WHITE }}>
-
             <FocusAwareStatusBar isLightBar={false} isTopSpace={true} />
             <Header title={"Inbox"} activateRightIcon rightIconPress={goContact} rightIcon={<MessageSvg />} />
             <View style={{ flex: 1, backgroundColor: Colors.WHITE }} >
-
-
                 <View style={{ margin: 20 }}>
-
-                    <View style={{ height: 60, borderWidth: 2, borderRadius: 40, backgroundColor: Colors.PRIMARY, left: 4, top: 6, width: Constants.SCREEN_WIDTH * 0.90 }}></View>
-
-                    <View style={{ height: 60, flexDirection: 'row', paddingHorizontal: 20, alignItems: 'center', borderWidth: 2, borderRadius: 40, backgroundColor: Colors.WHITE, position: 'absolute', width: Constants.SCREEN_WIDTH * 0.90 }} >
+                    <View style={styles.container}></View>
+                    <View style={styles.searchInput} >
                         <SearchSvg />
                         <TextInput
-                            // autoFocus
                             onChangeText={text => Search(text)}
-                            // onFocus={goToList}
                             placeholder='Search' style={{ flex: 1, fontFamily: Fonts.BOLD, fontSize: Fonts.SIZE_16 }} />
                     </View>
                 </View>
@@ -106,9 +91,7 @@ const InboxScreen = ({ navigation, myUserId, myUserName }) => {
                             contentContainerStyle={{ marginTop: 20, marginHorizontal: 20 }}
                         />
                 }
-
             </View>
-
         </View >
     )
 }
@@ -117,8 +100,7 @@ const mapStateToProps = state => ({
     phNo: state.user.phNo,
     myUserId: state.user.userId,
     myUserName: state.user.name,
-    isSignedIn: state.user.isSignedIn,
-    bookItems: state.bookmark.bookItems,
+    isSignedIn: state.user.isSignedIn
 });
 
 const mapDispatchToProps = dispatch => ({ dispatch });

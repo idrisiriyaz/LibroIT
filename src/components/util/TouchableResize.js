@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-    View,
-    TouchableOpacity,
-    Animated,
-    StyleSheet,
-} from 'react-native';
+import { TouchableOpacity, Animated, StyleSheet } from 'react-native';
 import { Colors } from '../../global';
 
 const TouchableResize = ({
@@ -15,8 +10,14 @@ const TouchableResize = ({
     resizeValue = 0.8,
 }) => {
 
+    //variable
     const animatedValue = React.useRef(new Animated.Value(0)).current;
+    const scale = animatedValue.interpolate({
+        inputRange: [0, 1],
+        outputRange: [1, resizeValue],
+    })
 
+    //function
     const startAnimation = () => {
         Animated.timing(
             animatedValue, {
@@ -37,10 +38,7 @@ const TouchableResize = ({
         ).start();
     };
 
-    const scale = animatedValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: [1, resizeValue],
-    })
+ 
 
     return (
         <TouchableOpacity

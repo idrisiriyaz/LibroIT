@@ -5,4 +5,6 @@ import * as Constants from './constants';
 import * as GlobalStyles from './globalStyles';
 import * as Server from './server';
 import * as Services from './Services';
-export { Colors, ScreenNames, Fonts, Constants, GlobalStyles, Server };
+
+
+export { Colors, ScreenNames, Fonts, Constants, GlobalStyles, Server, Services };

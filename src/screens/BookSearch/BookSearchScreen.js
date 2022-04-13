@@ -1,117 +1,69 @@
-// import React from 'react';
-// import { View } from 'react-native';
-import FocusAwareStatusBar from '../../components/FocusAwareStatusBar';
-import styles from './BookSearchStyle'
 import React, { useState, useEffect } from 'react';
-import { Button, TextInput, Text, Alert, View, TouchableOpacity, Image, ActivityIndicator, ScrollView, FlatList } from 'react-native';
-import auth from '@react-native-firebase/auth';
-import { connect } from 'react-redux';
-import Header from '../../components/Header/Header';
-import HomeHeader from '../../components/Header/HomeHeader';
-import { Colors, Constants, Fonts, ScreenNames } from '../../global';
-import SearchSvg from '../../assets/svg/search';
-import BackSvg from '../../assets/svg/back';
+import { TextInput, Text, View, ActivityIndicator, FlatList } from 'react-native';
 
-import * as Service from '../../global/Services';
+//npm
 import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
+import { connect } from 'react-redux';
+
+//component
+import FocusAwareStatusBar from '../../components/FocusAwareStatusBar';
+import BookItem from '../../components/BookItem/BookItem';
+import Header from '../../components/Header/Header';
+
+//global
+import { Colors, Constants, Fonts, ScreenNames, Services } from '../../global';
+
+//svg
+import SearchSvg from '../../assets/svg/search';
+import { styles } from './BookSearchStyle';
 
 
 const BookSearchScreen = () => {
 
-	//Variables
 
-	//States
-
-	//Refs
-
-	//Functions
-
-	//UseEffect
-
-	//UI
-	// console.warn(phNo);
+	//variable
 	const navigation = useNavigation();
 
+	//state
 	const [bookSearchList, setBookSearchList] = useState([]);
 	const [Loader, setLoader] = useState(false);
 	const [searchText, setSearchText] = useState(null);
 	const [totalList, setTotalList] = useState(0);
 
-
+	//function
 	const goToDetails = (isbn13) => navigation.navigate(ScreenNames.BOOK_DETAILS, { isbn13: isbn13 })
 
 	const getBookList = async (text) => {
-
-
 		setSearchText(text)
-
 		if (text) {
 			setLoader(true)
 			try {
-				const response = await Service.getBookSearchListApi(text);
+				const response = await Services.getBookSearchListApi(text);
 				console.warn(response.data);
 
 				if (response.data.books) {
 					setBookSearchList(response.data.books)
 					setTotalList(response.data.total)
 				}
-
-				// console.warn(response.data.total);
 			} catch (error) {
 				console.warn(error);
 			}
-
 			setLoader(false)
 		}
 	}
 
-	useEffect(() => {
-		// getBookDetails();
 
-	}, [])
-
-
-
-	const renderBookList = ({ item }) => {
-
-		return (
-			<TouchableOpacity onPress={() => goToDetails(item.isbn13)} style={{ borderRadius: 16, flexDirection: 'row', marginHorizontal: 20, marginVertical: 10, backgroundColor: Colors.WHITE, justifyContent: 'space-evenly', alignItems: 'center', borderWidth: 2, paddingVertical: 10 }}>
-
-				<Image
-					style={{ height: 100, width: 100 }}
-
-					source={{ uri: item.image }} />
-
-				<View style={{}}  >
-
-					<Text numberOfLines={1} style={{ fontFamily: Fonts.BOLD, maxWidth: Constants.SCREEN_WIDTH / 2, color: Colors.BLACK, fontSize: Fonts.SIZE_14 }}>
-						{item.title}
-
-					</Text>
-					<Text numberOfLines={2} style={{ fontFamily: Fonts.BOLD, maxWidth: Constants.SCREEN_WIDTH / 2, color: Colors.GRAY_DARK, fontSize: Fonts.SIZE_12, marginBottom: 10, }}>
-						{item.subtitle}
-					</Text>
-				</View>
-			</TouchableOpacity>
-		)
-	}
-
-
+	const renderBookList = ({ item }) => <BookItem goToDetails={goToDetails} item={item} />
 
 	return (
 		<View style={{ flex: 1, backgroundColor: Colors.WHITE }} >
 			<FocusAwareStatusBar isLightBar={false} isTopSpace={true} />
 			<Header title={"Search Book"} />
 			<View style={{ flex: 1, backgroundColor: Colors.WHITE }} >
-
-
-
 				<View style={{ margin: 20 }}>
-
-					<View style={{ height: 60, borderWidth: 2, borderRadius: 40, backgroundColor: Colors.PRIMARY, left: 4, top: 6, width: Constants.SCREEN_WIDTH * 0.90 }}></View>
-
-					<View style={{ height: 60, flexDirection: 'row', paddingHorizontal: 20, alignItems: 'center', borderWidth: 2, borderRadius: 40, backgroundColor: Colors.WHITE, position: 'absolute', width: Constants.SCREEN_WIDTH * 0.90 }} >
+					<View style={styles.conatainer}></View>
+					<View style={styles.searchInput} >
 						<SearchSvg />
 						<TextInput
 							autoFocus
@@ -122,12 +74,10 @@ const BookSearchScreen = () => {
 				</View>
 				{
 					searchText ? Loader ? <ActivityIndicator color={Colors.PRIMARY} size='large' /> :
-
 						<>
-
-							<View style={{ flexDirection: 'row', marginHorizontal: 20, marginBottom: 10, justifyContent: 'space-between' }}>
-								<Text style={{ fontFamily: Fonts.BOLD, color: Colors.BLACK, fontSize: Fonts.SIZE_16, }}>Result</Text>
-								<Text style={{ fontFamily: Fonts.BOLD, color: Colors.BLACK, fontSize: Fonts.SIZE_16, }}>{totalList}</Text>
+							<View style={styles.totalCon}>
+								<Text style={styles.total}>Total</Text>
+								<Text style={styles.total}>{totalList}</Text>
 							</View>
 
 							{
@@ -143,16 +93,8 @@ const BookSearchScreen = () => {
 						<View style={{ justifyContent: 'center' }} >
 							<LottieView style={{ height: Constants.SCREEN_HEIGHT / 2, alignSelf: 'center' }} source={require('../../assets/json/looking-for-something.json')} autoPlay loop />
 						</View>
-
-
-
 				}
-
-
-
 			</View>
-
-
 		</View >
 	)
 };

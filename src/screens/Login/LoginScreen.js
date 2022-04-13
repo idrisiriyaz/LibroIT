@@ -1,26 +1,28 @@
 import React from 'react';
 import { Keyboard, KeyboardAvoidingView, ScrollView, Text, TextInput, TouchableOpacity, ActivityIndicator, View, Alert } from 'react-native';
+
+//component
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar';
-import { Colors, Fonts, Constants } from '../../global';
+
+//global
+import { Colors, Fonts, ScreenNames } from '../../global';
 import { globalStyles } from '../../global/globalStyles';
+
+//style
 import { styles } from './LoginStyle'
-import { ScreenNames } from '../../global/index';
-import database from '@react-native-firebase/database'
+
+//npm
 import firestore from '@react-native-firebase/firestore';
-
-
 
 const LoginScreen = ({ navigation }) => {
 
-	//Variables
 
-	//States
+
+	//state
 	const [number, setNumber] = React.useState(0)
 	const [Loader, setLoader] = React.useState(false)
 
-	//Refs
-
-	//Functions
+	//function
 	const Login = async () => {
 
 
@@ -51,37 +53,6 @@ const LoginScreen = ({ navigation }) => {
 					}
 				});
 
-			// await database().ref(`users`).once('value', users => {
-			// 	if (!users.exists()) {
-
-			// 		navigation.navigate(ScreenNames.REGISTER)
-
-			// 	} else {
-
-			// 		// let user = Object.values(users.val())
-			// 		let key = Object.keys(users.val())
-
-			// 		const isPresent = key.includes(number.toString());
-
-			// 		// console.warn(isPresent);
-			// 		// console.warn(user.includes(9271173131"));
-
-			// 		if (isPresent) {
-			// 			navigation.navigate(ScreenNames.OTP, { number: number })
-
-
-			// 		} else {
-			// 			navigation.navigate(ScreenNames.REGISTER)
-
-			// 		}
-
-
-			// 	}
-
-
-			// });
-
-
 		} else {
 
 			Alert.alert('Alert!', "Please Enter Valid Number")
@@ -90,34 +61,10 @@ const LoginScreen = ({ navigation }) => {
 
 	}
 
-
-
-
-
 	const Register = () => {
 		navigation.navigate(ScreenNames.REGISTER)
 	}
 
-	//UseEffect
-	React.useEffect(() => {
-
-		// const usersCollection = firestore().collection('users');
-
-		// console.warn(usersCollection.doc().get());
-
-		// firestore()
-		// 	.collection('users').doc("9702586589")
-		// 	.get()
-		// 	.then(querySnapshot => {
-		// 		console.log('Total users: ', querySnapshot.data());
-		// 	});
-
-		// firestore()
-		// 	.collection('users').doc("9702586589").set({
-		// 		size: "ssss"
-		// 	})
-
-	}, [])
 
 	//UI
 	return (
@@ -131,16 +78,11 @@ const LoginScreen = ({ navigation }) => {
 					<Text style={{ fontFamily: Fonts.BOLD, fontSize: 40, }}>
 						Welcome {'\n'}Login
 					</Text>
-					<Text style={{ fontFamily: Fonts.MEDIUM, fontSize: 20, color: "#00000070", marginTop: 20 }}>
+					<Text style={styles.font1}>
 						Enter Your Phone Number and we will send SMS with confirmation code to your number
 					</Text>
-					<View style={{ flexDirection: "row", marginVertical: 40, height: 60, flexDirection: 'row', paddingHorizontal: 20, alignItems: 'center', borderWidth: 2, borderRadius: 20, backgroundColor: Colors.WHITE, }}>
-						<Text style={{
-							fontFamily: Fonts.BOLD,
-							color: Fonts.BLACK,
-							fontSize: 18,
-
-						}}>
+					<View style={styles.code}>
+						<Text style={styles.codeText}>
 							+91
 						</Text>
 						<TextInput
@@ -150,7 +92,13 @@ const LoginScreen = ({ navigation }) => {
 							keyboardType="phone-pad"
 							style={{ ...styles.textinput, flex: 1 }}
 							placeholderTextColor={Fonts.BLACK}
-							onChangeText={text => setNumber(text)}
+							onChangeText={text => {
+								setNumber(text)
+								if (text.length == 10) {
+									Keyboard.dismiss();
+								}
+							}
+							}
 						/>
 					</View>
 				</View>

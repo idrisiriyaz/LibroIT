@@ -1,17 +1,25 @@
 import React from 'react';
-import { Text, View, Image, TouchableOpacity, StatusBar, ToastAndroid, FlatList, ActivityIndicator, Platform, Alert, Linking, Clipboard } from 'react-native';
+import { Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 
-//my imports
+//style
 import { styles } from './ProfileStyle';
+
+//component
 import Header from '../../components/Header/Header';
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar';
-import { connect } from 'react-redux';
-import { Colors, Constants, Fonts, ScreenNames } from '../../global';
-import { globalStyles } from '../../global/globalStyles';
+
+//npm
 import AsyncStorage from '@react-native-community/async-storage';
 import { CommonActions } from '@react-navigation/native';
-import * as UserAction from '../../redux/actions/userActions'
 import LottieView from 'lottie-react-native';
+import { connect } from 'react-redux';
+
+//global
+import { Colors, Constants, Fonts, ScreenNames } from '../../global';
+import { globalStyles } from '../../global/globalStyles';
+
+//redux
+import * as UserAction from '../../redux/actions/userActions'
 
 
 const UserDetailScreen = ({
@@ -24,17 +32,13 @@ const UserDetailScreen = ({
 
 	const [Loader, setLoader] = React.useState(false);
 
-	//Variables
+	//variable
 	const resetStackAndGoToHome = CommonActions.reset({
 		index: 0,
 		routes: [{ name: ScreenNames.BOTTOM_TABS, }],
 	});
 
-	//States
-
-	//Refs
-
-	//Functions
+	//function
 	const Logout = async () => {
 		setLoader(true)
 		await AsyncStorage.clear()
@@ -51,37 +55,18 @@ const UserDetailScreen = ({
 			<FocusAwareStatusBar isLightBar={false} isTopSpace={true} isTransparent={true} />
 			<Header activateLeftIcon={false} name={"Profile"} />
 
-
-
-			<View style={{ backgroundColor: Colors.SECONDARY, bottom: 0, width: Constants.SCREEN_WIDTH, height: Constants.SCREEN_HEIGHT / 1.6, position: 'absolute', borderWidth: 2, borderTopLeftRadius: 40, alignItems: 'center' }}>
-
-
-
-
-
-				<View style={{ borderWidth: 2, margin: 20, padding: 20, borderRadius: 20, position: 'absolute', bottom: Constants.SCREEN_HEIGHT / 2, justifyContent: 'center', alignContent: "center", alignItems: 'center', backgroundColor: Colors.WHITE, }}>
-
+			<View style={styles.cont}>
+				<View style={styles.contain}>
 					<View style={{ justifyContent: "center", flex: 1 }}>
-
 						<LottieView style={{ height: 200, width: 200, right: 8, }} source={require('../../assets/json/profile.json')} autoPlay loop />
-
 					</View>
-
-
-
-					<Text numberOfLines={1} style={{ fontFamily: Fonts.BOLD, width: Constants.SCREEN_WIDTH * 0.6, marginLeft: 10, fontSize: Fonts.SIZE_20, color: Colors.BLACK }}>
+					<Text numberOfLines={1} style={styles.userName}>
 						{userName}
 					</Text>
-					<Text numberOfLines={1} style={{ fontFamily: Fonts.BOLD, width: Constants.SCREEN_WIDTH * 0.6, marginLeft: 10, fontSize: Fonts.SIZE_18, color: Colors.GRAY_DARK }}>
+					<Text numberOfLines={1} style={styles.phoneNumber}>
 						+91 {phNo}
 					</Text>
-
-
 				</View>
-
-
-
-
 			</View>
 			<TouchableOpacity style={{ ...globalStyles.button, borderWidth: 2, borderRadius: 30, top: Constants.SCREEN_HEIGHT * 0.6 }} onPress={Logout}>
 				{Loader ? <ActivityIndicator color={Colors.BLACK} /> : <Text style={{ ...globalStyles.buttonText }}>
@@ -94,8 +79,7 @@ const UserDetailScreen = ({
 
 const mapStateToProps = state => ({
 	phNo: state.user.phNo,
-	userName: state.user.name,
-	bookItems: state.bookmark.bookItems,
+	userName: state.user.name
 });
 
 const mapDispatchToProps = dispatch => ({ dispatch });

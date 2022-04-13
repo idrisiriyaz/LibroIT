@@ -1,31 +1,32 @@
-import OTPInputView from '@twotalltotems/react-native-otp-input';
 import React, { useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, Alert, TouchableOpacity, ActivityIndicator, View } from 'react-native';
-import FocusAwareStatusBar from '../../components/FocusAwareStatusBar';
-import { Colors, Fonts, ScreenNames } from '../../global';
-import OTPTextInput from 'react-native-otp-textinput';
-import { globalStyles } from '../../global/globalStyles';
-import { styles } from './OTPStyles'
-import { connect } from 'react-redux';
-import * as UserAction from '../../redux/actions/userActions'
+import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, Alert, TouchableOpacity, ActivityIndicator, View } from 'react-native';
+
+//npm
+import OTPInputView from '@twotalltotems/react-native-otp-input';
 import AsyncStorage from '@react-native-community/async-storage';
-import auth from '@react-native-firebase/auth';
-import database from '@react-native-firebase/database'
 import firestore from '@react-native-firebase/firestore';
+import OTPTextInput from 'react-native-otp-textinput';
+import auth from '@react-native-firebase/auth';
+import { connect } from 'react-redux';
+
+//component
+import FocusAwareStatusBar from '../../components/FocusAwareStatusBar';
+
+//global
+import { Colors, Fonts, ScreenNames } from '../../global';
+import { globalStyles } from '../../global/globalStyles';
+
+//style
+import { styles } from './OTPStyles'
+
+//redux
+import * as UserAction from '../../redux/actions/userActions'
 
 const OTPScreen = ({ navigation, route: { params: { number } }, params, dispatch }, props) => {
 
-	//Variables
-	const user = {
-		userId: 1,
-		userName: "Dummy User",
-		email: "dummyuser@user.com",
-		dob: "2000-10-30",
-		anniversaryDate: "2000-02-29",
-		// phone: route.params.phone
-	}
 
-	//States
+
+	//state
 	const otpInput = React.useRef(null);
 	const [code, setCode] = React.useState('023405');
 	const [minutes, setMinutes] = React.useState(1);
@@ -37,30 +38,25 @@ const OTPScreen = ({ navigation, route: { params: { number } }, params, dispatch
 	const timerRef = React.useRef();
 	const [confirm, setConfirm] = useState(null);
 
-	// const [code, setCode] = useState('');
 
-	// Handle the button press
-	async function signInWithPhoneNumber(phoneNumber) {
+	//function
+	const signInWithPhoneNumber = async (phoneNumber) => {
 		const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
 		setConfirm(confirmation);
 	}
 
-	async function confirmCode() {
+
+	const confirmCode = async () => {
 		setLoader(true)
-
-
 		try {
 			await confirm.confirm(code);
 			verifyOtp();
 		} catch (error) {
-
 			Alert.alert('Alert!', 'Invalid code.')
-			// console.log('Invalid code.');
 		}
 		setLoader(false)
-
 	}
-	//Functions
+
 	const startTimer = () => {
 		timerRef.current = setInterval(() => {
 			setTimerValue(prevTimerValue => prevTimerValue - 1);
@@ -209,31 +205,11 @@ const OTPScreen = ({ navigation, route: { params: { number } }, params, dispatch
 						}
 
 					</TouchableOpacity>
-					{/* <View style={{ flexDirection: "row", justifyContent: "center", marginBottom: 20 }}>
-					<Text style={{ color: "#16161680" }}>
-						Don’t have a account?
-					</Text>
-					<TouchableOpacity style={{ paddingLeft: 5 }}>
-						<Text style={{ color: "#161616" }}>
-							Sign up
-						</Text>
-					</TouchableOpacity>
-				</View> */}
 				</View>
 			</ScrollView>
 		</KeyboardAvoidingView >
 	)
 };
-// const mapStateToProps = (state) => {
-// 	return {
-// 		contactId: state.brand.contactId,
-// 		country: state.brand.country,
-// 		brandId: state.brand.brandId,
-// 		brandInterest: state.brand.brandInterest,
-// 		currentUserType: state.user.currentUserType,
-
-// 	};
-// };
 
 const mapDispatchToProps = (dispatch) => ({ dispatch, });
 

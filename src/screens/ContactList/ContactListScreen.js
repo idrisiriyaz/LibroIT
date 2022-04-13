@@ -1,35 +1,42 @@
 import { View, Text, TextInput, FlatList, Alert, PermissionsAndroid, ActivityIndicator } from 'react-native'
 import React from 'react'
+
+//style
 import { styles } from './ContactStyle'
+
+//global
 import { Colors, Constants, Fonts } from '../../global'
+
+//component
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar'
-import Header from '../../components/Header/Header'
-import SearchSvg from '../../assets/svg/search';
-import { connect } from 'react-redux'
-import Contacts from 'react-native-contacts';
-import firestore from '@react-native-firebase/firestore';
 import ContactItem from '../../components/ContactItem/ContactItem'
+import Header from '../../components/Header/Header'
+
+//svg
+import SearchSvg from '../../assets/svg/search';
+
+//npm
+import firestore from '@react-native-firebase/firestore';
 import { openSettings } from 'react-native-permissions';
+import Contacts from 'react-native-contacts';
+import { connect } from 'react-redux'
 
 
 const ContactListScreen = ({ navigation, phNo }) => {
 
-    // console.warn(typeof phNo);
-
-
+    //state
     const [contactUsers, setContactUsers] = React.useState(null);
-
     const [search, setSearch] = React.useState([])
     const [searchText, setSearchText] = React.useState('')
     const [Loader, setLoader] = React.useState(false);
 
 
+    //function
     const Search = (text) => {
         setSearchText(text)
         let filterData = contactUsers.filter(e => e?.userName.includes(text) || (e?.phoneNumber.includes(text)))
         setSearch(filterData)
     }
-
 
     const listNoChatUsers = () => {
         return (<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -38,11 +45,7 @@ const ContactListScreen = ({ navigation, phNo }) => {
 
     }
 
-
-
     const _renderItem = ({ item }) => <ContactItem navigation={navigation} phoneNumber={item?.phoneNumber} userName={item?.userName} userId={item?.userId} />
-
-
 
     const getContactList = async () => {
 
@@ -54,8 +57,6 @@ const ContactListScreen = ({ navigation, phNo }) => {
             const filterPhone = phoneNumbers.filter(e => typeof e?.number != 'undefined');
             const phone = filterPhone.map(e => e.number.replace(/\D/g, '').slice(-10));
             const mobileNumber = phone.filter(e => e != phNo);
-
-            // console.warn(mobileNumber);
             const userPhoneNumberByContact = [...new Set(mobileNumber)]
 
             await firestore()
@@ -82,18 +83,13 @@ const ContactListScreen = ({ navigation, phNo }) => {
 
                         }
                     }
-
-
-
                 })
             setLoader(false)
-
 
         }).catch((e) => {
             console.log(e)
         })
     }
-
 
     const checkStoragePermission = async () => {
         setLoader(true)
@@ -120,11 +116,9 @@ const ContactListScreen = ({ navigation, phNo }) => {
         setLoader(false)
 
     }
+
     React.useEffect(() => {
-
-
         checkStoragePermission()
-
     }, [])
 
     return (
@@ -137,14 +131,12 @@ const ContactListScreen = ({ navigation, phNo }) => {
 
                 <View style={{ margin: 20 }}>
 
-                    <View style={{ height: 60, borderWidth: 2, borderRadius: 40, backgroundColor: Colors.PRIMARY, left: 4, top: 6, width: Constants.SCREEN_WIDTH * 0.90 }}></View>
+                    <View style={styles.container}></View>
 
-                    <View style={{ height: 60, flexDirection: 'row', paddingHorizontal: 20, alignItems: 'center', borderWidth: 2, borderRadius: 40, backgroundColor: Colors.WHITE, position: 'absolute', width: Constants.SCREEN_WIDTH * 0.90 }} >
+                    <View style={styles.searchInput} >
                         <SearchSvg />
                         <TextInput
-                            // autoFocus
                             onChangeText={text => Search(text)}
-                            // onFocus={goToList}
                             placeholder='Search' style={{ flex: 1, fontFamily: Fonts.BOLD, fontSize: Fonts.SIZE_16 }} />
                     </View>
                 </View>
@@ -158,12 +150,7 @@ const ContactListScreen = ({ navigation, phNo }) => {
                             contentContainerStyle={{ marginTop: 20, marginHorizontal: 20 }}
                         />
                 }
-
             </View>
-
-            {/* <View style={{ justifyContent: 'center', position: 'absolute', backgroundColor: Colors.PRIMARY, borderWidth: 2, bottom: 40, left: Constants.SCREEN_WIDTH / 1.2, height: 50, width: 50, alignItems: 'center', borderRadius: 50 }}>
-                <Text>hhh</Text>
-            </View> */}
         </View >
     )
 }
@@ -172,8 +159,7 @@ const mapStateToProps = state => ({
     phNo: state.user.phNo,
     myUserId: state.user.userId,
     myUserName: state.user.name,
-    isSignedIn: state.user.isSignedIn,
-    bookItems: state.bookmark.bookItems,
+    isSignedIn: state.user.isSignedIn
 });
 
 const mapDispatchToProps = dispatch => ({ dispatch });

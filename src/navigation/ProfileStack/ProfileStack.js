@@ -1,20 +1,25 @@
 import React from 'react';
+
+//global
 import { ScreenNames } from '../../global/index';
-import { enableScreens } from 'react-native-screens';
+
+//npm
 import { createNativeStackNavigator } from 'react-native-screens/native-stack';
+import { enableScreens } from 'react-native-screens';
+import { connect } from 'react-redux';
 
-//my imports
-
-//screens imports
+//screen
 import LoginScreen from '../../screens/Login/LoginScreen';
 import OTPScreen from '../../screens/OTP/OTPScreen';
-import { connect } from 'react-redux';
 import ProfileScreen from '../../screens/Profile/ProfileScreen';
 import RegisterScreen from '../../screens/RegisterScreen/RegisterScreen';
 import RegisterOTPScreen from '../../screens/RegisterOTP/RegisterOTPScreen';
 
-enableScreens();
+//variable
 const stack = createNativeStackNavigator();
+
+//function
+enableScreens();
 
 const ProfileStack = ({
 	isSignedIn

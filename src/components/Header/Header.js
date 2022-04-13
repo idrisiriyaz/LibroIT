@@ -1,24 +1,32 @@
 import React from 'react';
-import {
-	Text,
-	View,
-	TouchableOpacity,
-} from 'react-native';
+import { Text, View } from 'react-native';
 
-//my imports
+//style
 import { styles } from './styles'
+
+//npm
 import { useNavigation } from '@react-navigation/native';
+
+//svg
 import MenuSvg from '../../assets/svg/header/menu';
 import BackSpaceSvg from '../../assets/svg/header/backspace';
-import { Colors, Constants } from '../../global/index';
+
+//global
+import { Colors } from '../../global/index';
+
+//component
 import TouchableResize from '../util/TouchableResize';
 
-// import Back from '../../assets/svg/Back';
+
 
 const Header = ({ activateLeftIcon = true, activateRightIcon, rightIcon, rightIconPress, title }) => {
 
+
+	//variable
 	const navigation = useNavigation();
 
+
+	//function
 	const goBack = () => navigation.goBack();
 
 	return (

@@ -1,10 +1,14 @@
 import React from 'react';
 import { Text, View, Animated, Modal } from 'react-native';
-import { connect } from 'react-redux';
 
+//npm
+import { connect } from 'react-redux';
+import { useIsFocused } from '@react-navigation/native';
+
+//style
 import { styles } from './CustomToastStyle';
 
-import { useIsFocused } from '@react-navigation/native';
+//global
 import { Constants } from '../../global';
 
 const CustomToast = ({
@@ -15,15 +19,13 @@ const CustomToast = ({
     setCustomToast
 }) => {
 
+
+    //variable
     const isFocused = useIsFocused();
     const animatedValue = React.useRef(new Animated.Value(0)).current;
 
-    React.useEffect(() => {
-        if (isToastMsgVisible) {
-            startAnimation();
-        }
-    }, [isToastMsgVisible]);
-
+  
+    //function
     const startAnimation = () => {
         Animated.timing(animatedValue, {
             toValue: 1,
@@ -40,6 +42,11 @@ const CustomToast = ({
         }).start(() => setCustomToast(false));
     };
 
+    React.useEffect(() => {
+        if (isToastMsgVisible) {
+            startAnimation();
+        }
+    }, [isToastMsgVisible]);
     if (isToastMsgVisible && isFocused) {
         return (
             <Modal

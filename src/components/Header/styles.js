@@ -54,5 +54,6 @@ export const styles = StyleSheet.create({
         fontSize: Fonts.SIZE_18,
         fontFamily: Fonts.BOLD,
         color: Colors.BLACK
-    }
+    },
+    dot: { height: 10, width: 10, borderRadius: 10, backgroundColor: Colors.WHITE, borderWidth: 1 }
 });

@@ -1,12 +1,16 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
+
+//global
 import { Colors, Constants, Fonts, ScreenNames } from '../../global'
+
+//npm
 import database from '@react-native-firebase/database'
 import { connect } from 'react-redux'
 
 const ContactItem = ({ userId, userName, myUserName, myUserId, phoneNumber, navigation }) => {
 
- 
+    //function
     const addChatLobby = async () => {
 
         database().ref(`UserChat/${myUserId}`).once('value', chat => {
@@ -80,9 +84,6 @@ const ContactItem = ({ userId, userName, myUserName, myUserId, phoneNumber, navi
 
     }
 
-    React.useEffect(() => {
-
-    }, []);
     return (
         <TouchableOpacity onPress={
             () => {
@@ -111,7 +112,6 @@ const mapStateToProps = state => ({
     myUserId: state.user.userId,
     myUserName: state.user.name,
     isSignedIn: state.user.isSignedIn,
-    bookItems: state.bookmark.bookItems,
 });
 
 const mapDispatchToProps = dispatch => ({ dispatch });

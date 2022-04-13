@@ -20,4 +20,13 @@ export const styles = StyleSheet.create({
 		color: Fonts.BLACK,
 		marginRight: 20,
 	},
+	font1: { fontFamily: Fonts.MEDIUM, fontSize: 20, color: "#00000070", marginTop: 20 },
+	code:{ flexDirection: "row", marginVertical: 40, height: 60, flexDirection: 'row', paddingHorizontal: 20, alignItems: 'center', borderWidth: 2, borderRadius: 20, backgroundColor: Colors.WHITE, },
+	codeText:{
+		fontFamily: Fonts.BOLD,
+		color: Fonts.BLACK,
+		fontSize: 18,
+
+	},
+	
 })

@@ -1,61 +1,29 @@
 import React from 'react';
 import { Keyboard, KeyboardAvoidingView, Alert, ScrollView, Text, TextInput, ActivityIndicator, TouchableOpacity, View } from 'react-native';
+
+//component
 import FocusAwareStatusBar from '../../components/FocusAwareStatusBar';
+
+//style
+import { styles } from './RegisterStyle'
+
+//global
 import { Colors, Fonts, Constants } from '../../global';
 import { globalStyles } from '../../global/globalStyles';
-import { styles } from './RegisterStyle'
 import { ScreenNames } from '../../global/index';
-import database from '@react-native-firebase/database'
-import { StackActions } from '@react-navigation/native';
+
+//npm
 import firestore from '@react-native-firebase/firestore';
 
 const RegisterScreen = ({ navigation }) => {
 
-	//Variables
-
-	//States
+	//state
 	const [phoneNumber, setNumber] = React.useState('');
 	const [userName, setUserName] = React.useState('');
-	const [verifyUserName, setVerifyUserName] = React.useState(false);
 	const [Loader, setLoader] = React.useState(false)
 	const [checkUser, setCheckUser] = React.useState(false);
 
-	//Refs
-
-	//Functions
-
-	// async function checkUserName(userName) {
-
-
-
-	// 	await firestore()
-	// 		.collection('users')
-	// 		.get().then(documentSnapshot => {
-	// 			documentSnapshot.forEach(snapshot => {
-
-
-	// 				const user = snapshot.data()
-	// 				// console.warn(typeof user.userName);
-	// 				// console.warn(typuserName);
-	// 				// console.warn(user.userName === userName);
-
-	// 				if (user.userName === userName) {
-
-
-
-	// 					Alert.alert("Alert!", 'Already UserName')
-	// 				} else {
-
-	// 				}
-
-
-	// 			})
-	// 		}
-	// 		)
-
-	// }
-
-
+	//function
 	const Register = async () => {
 		setLoader(true)
 
@@ -64,7 +32,6 @@ const RegisterScreen = ({ navigation }) => {
 
 		} else {
 
-
 			let isUserAvail;
 			await firestore()
 				.collection('users')
@@ -72,11 +39,7 @@ const RegisterScreen = ({ navigation }) => {
 				.where('userName', '==', userName)
 				.get()
 				.then(querySnapshot => {
-
-
 					isUserAvail = querySnapshot.size;
-					// return 
-					/* ... */
 				});
 
 			if (isUserAvail === 1) {
@@ -117,9 +80,7 @@ const RegisterScreen = ({ navigation }) => {
 					Alert.alert('Alert!', "Please Enter Valid Number")
 				}
 
-
 			}
-
 
 		}
 
@@ -132,7 +93,6 @@ const RegisterScreen = ({ navigation }) => {
 	const onUsernameChange = (t) => {
 		setUserName(t)
 		if (Constants.isValidUser(t).valid) {
-			// usernameRef?.current?.showHelperText(Constants.isValidUser(t).message);
 			setCheckUser(false);
 			return;
 		} {
@@ -140,7 +100,7 @@ const RegisterScreen = ({ navigation }) => {
 
 		}
 	};
-	//UseEffect
+
 
 	//UI
 	return (
@@ -184,7 +144,12 @@ const RegisterScreen = ({ navigation }) => {
 							keyboardType="phone-pad"
 							style={{ ...styles.textinput, flex: 1 }}
 							placeholderTextColor={Fonts.BLACK}
-							onChangeText={text => setNumber(text)}
+							onChangeText={text => {
+								setNumber(text)
+								if (text.length == 10) {
+									Keyboard.dismiss();
+								}
+							}}
 						/>
 					</View>
 				</View>
